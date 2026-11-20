@@ -30,7 +30,7 @@ button{padding:10px 16px;border-radius:20px;border:none;background:#1d6b52;color
 <div class="box"><input id="mi" placeholder="Write private message..."><button onclick="send()">↑</button></div>
 <div class="modal" id="nm"><div class="card"><h3>Private Vanish Room</h3><input id="ni" placeholder="Your nickname..." style="width:85%;margin-bottom:8px"><input id="ri" placeholder="Secret room code (e.g. love12)" style="width:85%;margin-bottom:10px"><br><button onclick="join()">Enter Room</button></div></div>
 <script>
-const BASE="https://vanishchat-5874b"+"://firebaseio.com";
+const BASE="https://vanishchat-5874b-default-rtdb.firebaseio"+".com/rooms";
 let nick=localStorage.getItem("n")||"",room=localStorage.getItem("rm")||"",taps=0;
 if(nick&&room){document.getElementById("nm").style.display="none";document.getElementById("rc").innerText=room;}
 function join(){let v=document.getElementById("ni").value.trim(),r=document.getElementById("ri").value.trim().toLowerCase().replace(/[^a-z0-9]/g,"");if(v&&r){nick=v;room=r;localStorage.setItem("n",v);localStorage.setItem("rm",r);document.getElementById("nm").style.display="none";document.getElementById("rc").innerText=room;load();}}
