@@ -1,65 +1,42 @@
- return;
-      const key = "Room_" + Date.now();
-      localRooms[key] = name;
-      localStorage.setItem("vc_rooms", JSON.stringify(localRooms));
-      document.getElementById("newRoomInput").value = "";
-      loadRooms();
-    }
-
-    function deleteRoom(key) {
-      delete localRooms[key];
-      delete localMessages[key];
-      localStorage.setItem("vc_rooms", JSON.stringify(localRooms));
-      localStorage.setItem("vc_msgs", JSON.stringify(localMessages));
-      if (currentRoom === key) currentRoom = "General_Room";
-      loadRooms();
-      renderMessages();
-    }
-
-    function selectRoomFromAdmin(key) {
-      currentRoom = key;
-      closeModals();
-      loadRooms();
-      renderMessages();
-    }
-
-    function switchRoom() {
-      currentRoom = document.getElementById("roomSelect").value;
-      renderMessages();
-    }
-
-    function sendMessage() {
-      const input = document.getElementById("msgInput");
-      const text = input.value.trim();
-      if (!text || !userNick) return;
-      if (!localMessages[currentRoom]) localMessages[currentRoom] = [];
-      localMessages[currentRoom].push({ sender: userNick, text: text, time: Date.now() });
-      localStorage.setItem("vc_msgs", JSON.stringify(localMessages));
-      input.value = "";
-      renderMessages();
-    }
-
-    function renderMessages() {
-      const box = document.getElementById("chatBox");
-      const now = Date.now();
-      let msgs = (localMessages[currentRoom] || []).filter(m => (now - m.time) < 30000);
-      localMessages[currentRoom] = msgs;
-      localStorage.setItem("vc_msgs", JSON.stringify(localMessages));
-      box.innerHTML = "";
-      msgs.forEach(m => {
-        const left = Math.max(1, Math.ceil((30000 - (now - m.time)) / 1000));
-        const div = document.createElement("div");
-        div.className = "msg " + (m.sender === userNick ? "me" : "other");
-        div.innerHTML = `<div class="msg-meta">${m.sender}</div><div>${m.text}</div><div class="vanish-tag">⏳ ${left}s</div>`;
-        box.appendChild(div);
-      });
-      box.scrollTop = box.scrollHeight;
-    }
-
-    loadRooms();
-    renderMessages();
-    setInterval(renderMessages, 1000);
-  </script>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Vanish Chat</title>
+<style>
+body{margin:0;font-family:sans-serif;background:#eef6f4;color:#1c1e1d;display:flex;flex-direction:column;height:100dvh}
+body.warm{background:#fdf5e6}body.quiet{background:#16181a;color:#fff}
+header{padding:14px;background:#fff;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #ddd}
+body.quiet header{background:#222}
+.brand{font-size:20px;font-weight:bold;color:#1d6b52;cursor:pointer}
+#chat{flex:1;overflow-y:auto;padding:15px;display:flex;flex-direction:column;gap:8px}
+.msg{max-width:75%;padding:10px 14px;border-radius:14px;background:#d4ede6;align-self:flex-end;font-size:15px}
+body.quiet .msg{background:#21402d}
+.box{padding:12px;background:#fff;display:flex;gap:8px;border-top:1px solid #ddd}
+body.quiet .box{background:#222;border-color:#333}
+input{flex:1;padding:12px;border-radius:20px;border:1px solid #ccc;font-size:15px}
+button{padding:10px 16px;border-radius:20px;border:none;background:#1d6b52;color:#fff;font-weight:bold}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.6);display:flex;align-items:center;justify-content:center}
+.card{background:#fff;color:#000;padding:20px;border-radius:16px;width:85%;max-width:320px}
+</style>
+</head>
+<body>
+<header><div class="brand" onclick="tap()">Vanish Chat</div><select id="rm" onchange="show()"></select></header>
+<div style="padding:10px 15px;font-size:12px;opacity:.7">Messages vanish in 30 seconds</div>
+<div id="chat"></div>
+<div style="padding:5px 15px;display:flex;gap:6px"><button onclick="document.body.className='warm'">Warm</button><button onclick="document.body.className=''">Calm</button><button onclick="document.body.className='quiet'">Quiet</button></div>
+<div class="box"><input id="mi" placeholder="Write message..."><button onclick="send()">↑</button></div>
+<div class="modal" id="nm"><div class="card"><h3>Welcome</h3><input id="ni" placeholder="Your nickname..." style="width:80%;margin-bottom:10px"><br><button onclick="join()">Join</button></div></div>
+<script>
+let nick=localStorage.getItem("n")||"",taps=0,rooms=JSON.parse(localStorage.getItem("r"))||["General"],msgs=JSON.parse(localStorage.getItem("m"))||[];
+if(nick)document.getElementById("nm").style.display="none";
+function join(){let v=document.getElementById("ni").value.trim();if(v){nick=v;localStorage.setItem("n",v);document.getElementById("nm").style.display="none";}}
+function tap(){taps++;if(taps==5){taps=0;if(prompt("Admin PIN:")=="849271"){let nr=prompt("New Room:");if(nr){rooms.push(nr);localStorage.setItem("r",JSON.stringify(rooms));loadR();}}}}
+function loadR(){let s=document.getElementById("rm");s.innerHTML="";rooms.forEach(r=>{let o=document.createElement("option");o.value=o.text=r;s.appendChild(o);});}
+function send(){let i=document.getElementById("mi"),v=i.value.trim();if(v&&nick){msgs.push({r:document.getElementById("rm").value,n:nick,t:v,time:Date.now()});localStorage.setItem("m",JSON.stringify(msgs));i.value="";show();}}
+function show(){let c=document.getElementById("chat"),now=Date.now(),cr=document.getElementById("rm").value;msgs=msgs.filter(x=>now-x.time<30000);localStorage.setItem("m",JSON.stringify(msgs));c.innerHTML="";msgs.filter(x=>x.r==cr).forEach(x=>{let d=document.createElement("div");d.className="msg";d.innerHTML=`<small>${x.n}</small><br>${x.t} <small>(${Math.ceil((30000-(now-x.time))/1000)}s)</small>`;c.appendChild(d);});}
+loadR();setInterval(show,1000);
+</script>
 </body>
-        </html>
-  
+ </html>
+ 
