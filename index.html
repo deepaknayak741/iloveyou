@@ -10,8 +10,10 @@ header{padding:14px;background:#fff;display:flex;justify-content:space-between;a
 body.quiet header{background:#222}
 .brand{font-size:20px;font-weight:bold;color:#1d6b52;cursor:pointer}
 #chat{flex:1;overflow-y:auto;padding:15px;display:flex;flex-direction:column;gap:8px}
-.msg{max-width:75%;padding:10px 14px;border-radius:14px;background:#d4ede6;align-self:flex-end;font-size:15px}
-body.quiet .msg{background:#21402d}
+.msg{max-width:75%;padding:10px 14px;border-radius:14px;background:#fff;align-self:flex-start;font-size:15px;box-shadow:0 1px 3px rgba(0,0,0,.1)}
+.msg.me{background:#d4ede6;align-self:flex-end}
+.msg.ghost{align-self:center;background:#222;color:#ffd700;font-style:italic;border:1px dashed #ffd700}
+body.quiet .msg{background:#2a2e33}body.quiet .msg.me{background:#21402d}
 .box{padding:12px;background:#fff;display:flex;gap:8px;border-top:1px solid #ddd}
 body.quiet .box{background:#222;border-color:#333}
 input{flex:1;padding:12px;border-radius:20px;border:1px solid #ccc;font-size:15px}
@@ -21,22 +23,23 @@ button{padding:10px 16px;border-radius:20px;border:none;background:#1d6b52;color
 </style>
 </head>
 <body>
-<header><div class="brand" onclick="tap()">Vanish Chat</div><select id="rm" onchange="show()"></select></header>
-<div style="padding:10px 15px;font-size:12px;opacity:.7">Messages vanish in 30 seconds</div>
+<header><div class="brand" onclick="tap()">Vanish Chat</div><button onclick="exit()" style="padding:6px 12px;font-size:12px">Room: <span id="rc"></span> ✕</button></header>
+<div style="padding:8px 15px;font-size:12px;opacity:.7">Private room • Messages vanish in 30s</div>
 <div id="chat"></div>
 <div style="padding:5px 15px;display:flex;gap:6px"><button onclick="document.body.className='warm'">Warm</button><button onclick="document.body.className=''">Calm</button><button onclick="document.body.className='quiet'">Quiet</button></div>
-<div class="box"><input id="mi" placeholder="Write message..."><button onclick="send()">↑</button></div>
-<div class="modal" id="nm"><div class="card"><h3>Welcome</h3><input id="ni" placeholder="Your nickname..." style="width:80%;margin-bottom:10px"><br><button onclick="join()">Join</button></div></div>
+<div class="box"><input id="mi" placeholder="Write private message..."><button onclick="send()">↑</button></div>
+<div class="modal" id="nm"><div class="card"><h3>Private Vanish Room</h3><input id="ni" placeholder="Your nickname..." style="width:85%;margin-bottom:8px"><input id="ri" placeholder="Secret room code (e.g. love12)" style="width:85%;margin-bottom:10px"><br><button onclick="join()">Enter Room</button></div></div>
 <script>
-let nick=localStorage.getItem("n")||"",taps=0,rooms=JSON.parse(localStorage.getItem("r"))||["General"],msgs=JSON.parse(localStorage.getItem("m"))||[];
-if(nick)document.getElementById("nm").style.display="none";
-function join(){let v=document.getElementById("ni").value.trim();if(v){nick=v;localStorage.setItem("n",v);document.getElementById("nm").style.display="none";}}
-function tap(){taps++;if(taps==5){taps=0;if(prompt("Admin PIN:")=="849271"){let nr=prompt("New Room:");if(nr){rooms.push(nr);localStorage.setItem("r",JSON.stringify(rooms));loadR();}}}}
-function loadR(){let s=document.getElementById("rm");s.innerHTML="";rooms.forEach(r=>{let o=document.createElement("option");o.value=o.text=r;s.appendChild(o);});}
-function send(){let i=document.getElementById("mi"),v=i.value.trim();if(v&&nick){msgs.push({r:document.getElementById("rm").value,n:nick,t:v,time:Date.now()});localStorage.setItem("m",JSON.stringify(msgs));i.value="";show();}}
-function show(){let c=document.getElementById("chat"),now=Date.now(),cr=document.getElementById("rm").value;msgs=msgs.filter(x=>now-x.time<30000);localStorage.setItem("m",JSON.stringify(msgs));c.innerHTML="";msgs.filter(x=>x.r==cr).forEach(x=>{let d=document.createElement("div");d.className="msg";d.innerHTML=`<small>${x.n}</small><br>${x.t} <small>(${Math.ceil((30000-(now-x.time))/1000)}s)</small>`;c.appendChild(d);});}
-loadR();setInterval(show,1000);
+const BASE="https://firebaseio.com";
+let nick=localStorage.getItem("n")||"",room=localStorage.getItem("rm")||"",taps=0;
+if(nick&&room){document.getElementById("nm").style.display="none";document.getElementById("rc").innerText=room;}
+function join(){let v=document.getElementById("ni").value.trim(),r=document.getElementById("ri").value.trim().toLowerCase().replace(/[^a-z0-9]/g,"");if(v&&r){nick=v;room=r;localStorage.setItem("n",v);localStorage.setItem("rm",r);document.getElementById("nm").style.display="none";document.getElementById("rc").innerText=room;load();}}
+function exit(){localStorage.removeItem("rm");location.reload();}
+async function tap(){taps++;if(taps==5){taps=0;if(prompt("Admin PIN:")=="849271"){let res=await fetch(BASE+".json"),all=await res.json(),list=all?Object.keys(all).join(", "):"None";let ch=prompt("Active Rooms: "+list+"\n\n1: Jump to any Room\n2: Send Ghost Message here");if(ch=="1"){let tr=prompt("Enter Room Code:");if(tr){room=tr;document.getElementById("rc").innerText=room;load();}}else if(ch=="2"){let gm=prompt("Ghost Message:");if(gm)post("👻 UNKNOWN",gm,1);}}}}
+async function post(n,t,g){if(!room)return;await fetch(`${BASE}/${room}.json`,{method:"POST",body:JSON.stringify({n:n,t:t,g:g,time:Date.now()})});load();}
+function send(){let i=document.getElementById("mi"),v=i.value.trim();if(v&&nick&&room){post(nick,v,0);i.value="";}}
+async function load(){if(!room)return;try{let r=await fetch(`${BASE}/${room}.json`),d=await r.json(),c=document.getElementById("chat"),now=Date.now();c.innerHTML="";if(!d)return;Object.keys(d).forEach(k=>{let m=d[k];if(now-m.time>30000){fetch(`${BASE}/${room}/${k}.json`,{method:"DELETE"});}else{let div=document.createElement("div");div.className=m.g?"msg ghost":(m.n==nick?"msg me":"msg");div.innerHTML=`<small>${m.n}</small><br>${m.t} <small>(${Math.ceil((30000-(now-m.time))/1000)}s)</small>`;c.appendChild(div);}});}catch(e){}}
+load();setInterval(load,1500);
 </script>
 </body>
- </html>
- 
+</html>
