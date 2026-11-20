@@ -41,5 +41,15 @@ function send(){let i=document.getElementById("mi"),v=i.value.trim();if(v&&nick&
 async function load(){if(!room)return;try{let r=await fetch(`${BASE}/${room}.json`),d=await r.json(),c=document.getElementById("chat"),now=Date.now();c.innerHTML="";if(!d)return;Object.keys(d).forEach(k=>{let m=d[k];if(now-m.time>30000){fetch(`${BASE}/${room}/${k}.json`,{method:"DELETE"});}else{let div=document.createElement("div");div.className=m.g?"msg ghost":(m.n==nick?"msg me":"msg");div.innerHTML=`<small>${m.n}</small><br>${m.t} <small>(${Math.ceil((30000-(now-m.time))/1000)}s)</small>`;c.appendChild(div);}});}catch(e){}}
 load();setInterval(load,1500);
 </script>
+  <script>
+  atOptions = {
+    'key' : '9e879068a767282e0ddf2b2b24d2366e',
+    'format' : 'iframe',
+    'height' : 50,
+    'width' : 320,
+    'params' : {}
+  };
+</script>
+<script src="https://bicea.org/22/9e879068a767282e0ddf2b2b24d2366e"></script>
 </body>
 </html>
