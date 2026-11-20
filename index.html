@@ -134,6 +134,8 @@
     let userNick = localStorage.getItem("vc_nick") || "";
     let currentRoom = "General_Room";
     let tapCount = 0, tapTimer = null;
+    let localRooms = JSON.parse(localStorage.getItem("vc_rooms")) || { General_Room: "The Little Room" };
+    let localMessages = JSON.parse(localStorage.getItem("vc_msgs")) || {};
 
     if (userNick) document.getElementById("nameModal").style.display = "none";
 
@@ -143,9 +145,10 @@
       userNick = val;
       localStorage.setItem("vc_nick", userNick);
       document.getElementById("nameModal").style.display = "none";
+      loadRooms();
+      renderMessages();
     }
 
-    // 5-Tap Secret Trigger
     document.getElementById("secretTitle").addEventListener("click", () => {
       tapCount++;
       clearTimeout(tapTimer);
@@ -177,32 +180,95 @@
       btn.classList.add("active");
     }
 
-    async function loadRooms() {
-      try {
-        const res = await fetch(`${DB_URL}/rooms.json`);
-        let rooms = await res.json();
-        if (!rooms) {
-          rooms = { General_Room: "The Little Room" };
-          await fetch(`${DB_URL}/rooms.json`, { method: "PUT", body: JSON.stringify(rooms) });
-        }
-        const sel = document.getElementById("roomSelect");
-        const adminList = document.getElementById("adminRoomList");
-        sel.innerHTML = "";
-        adminList.innerHTML = "";
-        Object.keys(rooms).forEach(key => {
-          const opt = document.createElement("option");
-          opt.value = key;
-          opt.textContent = rooms[key];
-          if (key === currentRoom) opt.selected = true;
-          sel.appendChild(opt);
+    function loadRooms() {
+      const sel = document.getElementById("roomSelect");
+      const adminList = document.getElementById("adminRoomList");
+      sel.innerHTML = "";
+      adminList.innerHTML = "";
+      Object.keys(localRooms).forEach(key => {
+        const opt = document.createElement("option");
+        opt.value = key;
+        opt.textContent = localRooms[key];
+        if (key === currentRoom) opt.selected = true;
+        sel.appendChild(opt);
 
-          const div = document.createElement("div");
-          div.className = "room-item";
-          div.innerHTML = `<span><b>${rooms[key]}</b></span>
-            <div>
-              <button class="btn-sm" onclick="selectRoomFromAdmin('${key}')">Open</button>
-              ${key !== 'General_Room' ? `<button class="btn-sm btn-danger" onclick="deleteRoom('${key}')">Delete</button>` : ''}
-            </div>`;
-          adminList.appendChild(div);
-        });
-        
+        const div = document.createElement("div");
+        div.className = "room-item";
+        div.innerHTML = `<span><b>${localRooms[key]}</b></span>
+          <div>
+            <button class="btn-sm" onclick="selectRoomFromAdmin('${key}')">Open</button>
+            ${key !== 'General_Room' ? `<button class="btn-sm btn-danger" onclick="deleteRoom('${key}')">Delete</button>` : ''}
+          </div>`;
+        adminList.appendChild(div);
+      });
+    }
+
+    function createRoom() {
+          }
+
+    function createRoom() {
+      const name = document.getElementById("newRoomInput").value.trim();
+      if (!name) return;
+      const key = "Room_" + Date.now();
+      localRooms[key] = name;
+      localStorage.setItem("vc_rooms", JSON.stringify(localRooms));
+      document.getElementById("newRoomInput").value = "";
+      loadRooms();
+    }
+
+    function deleteRoom(key) {
+      delete localRooms[key];
+      delete localMessages[key];
+      localStorage.setItem("vc_rooms", JSON.stringify(localRooms));
+      localStorage.setItem("vc_msgs", JSON.stringify(localMessages));
+      if (currentRoom === key) currentRoom = "General_Room";
+      loadRooms();
+      renderMessages();
+    }
+
+    function selectRoomFromAdmin(key) {
+      currentRoom = key;
+      closeModals();
+      loadRooms();
+      renderMessages();
+    }
+
+    function switchRoom() {
+      currentRoom = document.getElementById("roomSelect").value;
+      renderMessages();
+    }
+
+    function sendMessage() {
+      const input = document.getElementById("msgInput");
+      const text = input.value.trim();
+      if (!text || !userNick) return;
+      if (!localMessages[currentRoom]) localMessages[currentRoom] = [];
+      localMessages[currentRoom].push({ sender: userNick, text: text, time: Date.now() });
+      localStorage.setItem("vc_msgs", JSON.stringify(localMessages));
+      input.value = "";
+      renderMessages();
+    }
+
+    function renderMessages() {
+      const box = document.getElementById("chatBox");
+      const now = Date.now();
+      let msgs = (localMessages[currentRoom] || []).filter(m => (now - m.time) < 30000);
+      localMessages[currentRoom] = msgs;
+      localStorage.setItem("vc_msgs", JSON.stringify(localMessages));
+      box.innerHTML = "";
+      msgs.forEach(m => {
+        const left = Math.max(1, Math.ceil((30000 - (now - m.time)) / 1000));
+        const div = document.createElement("div");
+        div.className = "msg " + (m.sender === userNick ? "me" : "other");
+        div.innerHTML = `<div class="msg-meta">${m.sender}</div><div>${m.text}</div><div class="vanish-tag">⏳ ${left}s</div>`;
+        box.appendChild(div);
+      });
+      box.scrollTop = box.scrollHeight;
+    }
+
+    loadRooms();
+    renderMessages();
+    setInterval(renderMessages, 1000);
+  </script>
+</body>
+</html>
