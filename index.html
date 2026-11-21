@@ -3,102 +3,178 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>Vanish Chat Pro</title>
+<title>Vanish Fantasy</title>
 <style>
-  :root {
-    --bg: radial-gradient(circle at top right, #1a103c, #090a10 70%);
-    --glass: rgba(255, 255, 255, 0.06);
-    --border: rgba(0, 243, 255, 0.25);
-    --neon: #00f3ff;
-    --text: #ffffff;
-    --me-bg: linear-gradient(135deg, #00c6ff, #0072ff);
-    --other-bg: rgba(255, 255, 255, 0.1);
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; user-select: none; }
+  body {
+    margin: 0; font-family: 'Segoe UI', sans-serif;
+    background: radial-gradient(circle at 50% 20%, #1d0836, #05010d 80%);
+    color: #fff; display: flex; flex-direction: column; height: 100dvh; overflow: hidden;
   }
-  body.warm { --bg: radial-gradient(circle at top right, #3b1c0a, #120804 70%); --border: rgba(255, 165, 0, 0.35); --neon: #ffae00; --me-bg: linear-gradient(135deg, #ff8008, #ffc837); }
-  body.calm { --bg: radial-gradient(circle at top right, #0a362c, #051411 70%); --border: rgba(0, 255, 170, 0.3); --neon: #00ffaa; --me-bg: linear-gradient(135deg, #11998e, #38ef7d); }
-  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-  body { margin: 0; font-family: 'Segoe UI', Roboto, sans-serif; background: var(--bg); color: var(--text); display: flex; flex-direction: column; height: 100dvh; overflow: hidden; }
-  header { padding: 12px 16px; background: rgba(10, 12, 20, 0.75); backdrop-filter: blur(15px); display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); z-index: 10; }
-  .brand { font-size: 21px; font-weight: 800; background: linear-gradient(90deg, var(--neon), #fff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; cursor: pointer; user-select: none; }
-  .room-badge { background: var(--glass); border: 1px solid var(--border); color: var(--neon); padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: bold; cursor: pointer; }
-  .sub-bar { padding: 6px 15px; font-size: 11px; color: rgba(255,255,255,0.65); display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.25); }
-  .themes { display: flex; gap: 6px; }
-  .t-btn { padding: 3px 9px; border-radius: 12px; border: 1px solid var(--border); background: var(--glass); color: #fff; font-size: 10px; cursor: pointer; }
-  #chat { flex: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; gap: 12px; scroll-behavior: smooth; }
-  .msg { max-width: 78%; padding: 10px 14px; border-radius: 18px 18px 18px 4px; background: var(--other-bg); border: 1px solid rgba(255,255,255,0.12); align-self: flex-start; font-size: 15px; word-wrap: break-word; }
-  .msg.me { background: var(--me-bg); color: #050a14; font-weight: 500; border-radius: 18px 18px 4px 18px; align-self: flex-end; border: none; }
-  .msg.ghost { align-self: center; background: rgba(20, 20, 25, 0.9); color: #ffd700; border: 1px dashed #ffd700; border-radius: 14px; text-align: center; }
-  .msg-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; font-size: 11px; opacity: 0.8; margin-bottom: 4px; font-weight: bold; }
-  .del-btn { background: rgba(255, 50, 50, 0.2); border: 1px solid rgba(255, 80, 80, 0.5); color: #ff4d4d; border-radius: 50%; width: 20px; height: 20px; font-size: 11px; display: inline-flex; align-items: center; justify-content: center; cursor: pointer; padding: 0; }
-  .msg.me .del-btn { background: rgba(0,0,0,0.2); color: #fff; border-color: rgba(0,0,0,0.3); }
-  .magic-bar { display: flex; gap: 8px; padding: 8px 12px; overflow-x: auto; background: rgba(15, 18, 30, 0.85); border-top: 1px solid var(--border); scrollbar-width: none; }
-  .magic-bar::-webkit-scrollbar { display: none; }
-  .m-chip { background: var(--glass); border: 1px solid var(--border); color: #fff; padding: 5px 11px; border-radius: 15px; font-size: 14px; white-space: nowrap; cursor: pointer; }
-  .box { padding: 10px 12px; background: rgba(10, 12, 20, 0.95); display: flex; gap: 8px; align-items: center; }
-  input { flex: 1; padding: 12px 16px; border-radius: 25px; border: 1px solid var(--border); background: rgba(255,255,255,0.08); color: #fff; font-size: 15px; outline: none; }
-  .send-btn { width: 44px; height: 44px; border-radius: 50%; border: none; background: var(--me-bg); color: #000; font-size: 18px; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; }
-  .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.85); display: flex; align-items: center; justify-content: center; z-index: 100; }
-  .card { background: #121524; border: 1px solid var(--neon); color: #fff; padding: 24px; border-radius: 22px; width: 88%; max-width: 340px; text-align: center; }
-  .card h3 { margin-top: 0; color: var(--neon); font-size: 22px; }
-  .card input { width: 100%; margin-bottom: 12px; }
-  .card button { width: 100%; padding: 12px; border-radius: 25px; border: none; background: var(--me-bg); color: #000; font-weight: bold; font-size: 16px; cursor: pointer; }
-  .ad-wrap { background: #000; display: flex; justify-content: center; min-height: 50px; }
+  #stars { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
+  header {
+    padding: 10px 14px; background: rgba(15, 5, 35, 0.75);
+    backdrop-filter: blur(15px); display: flex; justify-content: space-between;
+    align-items: center; border-bottom: 1px solid rgba(255, 0, 234, 0.35); z-index: 10;
+  }
+  .brand {
+    font-size: 19px; font-weight: 900;
+    background: linear-gradient(90deg, #00f7ff, #ff00ea, #ffe600);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; cursor: pointer;
+  }
+  .h-btns { display: flex; gap: 6px; align-items: center; }
+  .v-btn {
+    background: linear-gradient(90deg, #ff007f, #7928ca); border: none;
+    color: #fff; padding: 5px 10px; border-radius: 16px; font-size: 11px;
+    font-weight: bold; cursor: pointer; box-shadow: 0 0 12px rgba(255, 0, 127, 0.5);
+  }
+  .room-badge {
+    background: rgba(0, 247, 255, 0.12); border: 1px solid #00f7ff;
+    color: #00f7ff; padding: 5px 10px; border-radius: 16px; font-size: 11px; font-weight: bold; cursor: pointer;
+  }
+  /* रोमांटिक और काल्पनिक वीडियो/संगीत थिएटर */
+  #mediaBox {
+    display: none; background: rgba(10, 2, 25, 0.95);
+    border-bottom: 1px solid #ff00ea; padding: 8px; z-index: 9; text-align: center;
+  }
+  #mediaBox iframe { width: 100%; height: 170px; border-radius: 12px; border: 1px solid #00f7ff; }
+  .m-tabs { display: flex; gap: 6px; justify-content: center; margin-top: 6px; }
+  .m-tab {
+    background: rgba(255,255,255,0.1); border: 1px solid #ff00ea; color: #fff;
+    padding: 3px 10px; border-radius: 12px; font-size: 11px; cursor: pointer;
+  }
+  #chat {
+    flex: 1; overflow-y: auto; padding: 12px; display: flex;
+    flex-direction: column; gap: 10px; z-index: 5; scroll-behavior: smooth;
+  }
+  .msg {
+    max-width: 80%; padding: 9px 13px; border-radius: 18px 18px 18px 4px;
+    background: rgba(35, 14, 70, 0.7); backdrop-filter: blur(10px);
+    border: 1px solid rgba(0, 247, 255, 0.35); align-self: flex-start;
+    font-size: 15px; box-shadow: 0 4px 15px rgba(0, 247, 255, 0.15);
+    animation: pop 0.25s ease; word-wrap: break-word; user-select: text;
+  }
+  .msg.me {
+    background: linear-gradient(135deg, rgba(255, 0, 200, 0.8), rgba(90, 0, 255, 0.8));
+    border: 1px solid #ff80e5; border-radius: 18px 18px 4px 18px; align-self: flex-end;
+  }
+  @keyframes pop { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
+  .msg-head { display: flex; justify-content: space-between; gap: 10px; font-size: 10px; color: #00f7ff; margin-bottom: 3px; }
+  .msg.me .msg-head { color: #ffe600; }
+  .del-btn { background: rgba(255,0,85,0.3); border: 1px solid #ff0055; color: #fff; border-radius: 50%; width: 18px; height: 18px; font-size: 9px; cursor: pointer; }
+  
+  .box {
+    padding: 8px 10px; background: rgba(12, 3, 28, 0.95);
+    border-top: 1px solid rgba(255, 0, 234, 0.35);
+    display: flex; gap: 8px; align-items: center; z-index: 10;
+  }
+  #mi {
+    flex: 1; padding: 10px 14px; border-radius: 22px; border: 1px solid #00f7ff;
+    background: rgba(255, 255, 255, 0.08); color: #fff; font-size: 15px; outline: none;
+  }
+  .send-btn {
+    width: 42px; height: 42px; border-radius: 50%; border: none;
+    background: linear-gradient(135deg, #00f7ff, #ff00ea);
+    color: #000; font-size: 18px; font-weight: bold; cursor: pointer;
+  }
+  /* कस्टम काल्पनिक कीबोर्ड (Fantasy Keyboard) */
+  #fKeyboard {
+    display: none; background: rgba(10, 2, 24, 0.98);
+    border-top: 1px solid #ff00ea; padding: 6px 4px 10px; z-index: 20;
+  }
+  .kb-row { display: flex; justify-content: center; gap: 4px; margin-bottom: 5px; }
+  .key {
+    flex: 1; max-width: 36px; height: 36px; border-radius: 8px;
+    background: linear-gradient(180deg, rgba(255,0,234,0.2), rgba(0,247,255,0.1));
+    border: 1px solid rgba(0, 247, 255, 0.35); color: #fff;
+    font-size: 15px; display: flex; align-items: center; justify-content: center;
+    cursor: pointer; box-shadow: 0 2px 6px rgba(0,0,0,0.5);
+  }
+  .key:active { background: #ff00ea; color: #000; transform: scale(0.92); }
+  .key.wide { max-width: 65px; font-size: 12px; background: rgba(255, 0, 127, 0.3); }
+  .key.space { max-width: 150px; font-size: 12px; }
+  
+  .modal { position: fixed; inset: 0; background: rgba(4, 1, 10, 0.92); display: flex; align-items: center; justify-content: center; z-index: 100; }
+  .card { background: #14062b; border: 1px solid #00f7ff; color: #fff; padding: 22px; border-radius: 22px; width: 88%; max-width: 340px; text-align: center; }
+  .card input { width: 100%; padding: 11px; margin-bottom: 10px; border-radius: 18px; border: 1px solid #ff00ea; background: rgba(255,255,255,0.1); color: #fff; }
+  .card button { width: 100%; padding: 11px; border-radius: 22px; border: none; background: linear-gradient(90deg, #00f7ff, #ff00ea); color: #000; font-weight: bold; font-size: 15px; cursor: pointer; }
+  .ad-wrap { background: #000; display: flex; justify-content: center; min-height: 50px; z-index: 10; }
 </style>
 </head>
 <body>
+<canvas id="stars"></canvas>
 
 <header>
-  <div class="brand" onclick="tap()">⚡ Vanish Chat</div>
-  <button class="room-badge" onclick="exit()">Room: <span id="rc">---</span> ✕</button>
+  <div class="brand" onclick="tap()">✨ Vanish Fantasy</div>
+  <div class="h-btns">
+    <button class="v-btn" onclick="toggleMedia()">🎬 Fantasy TV</button>
+    <button class="room-badge" onclick="exit()">Room: <span id="rc">---</span> ✕</button>
+  </div>
 </header>
 
-<div class="sub-bar">
-  <span>🔒 End-to-End • Manual Delete Only</span>
-  <div class="themes">
-    <button class="t-btn" onclick="document.body.className=''">Neon</button>
-    <button class="t-btn" onclick="document.body.className='warm'">Gold</button>
-    <button class="t-btn" onclick="document.body.className='calm'">Emerald</button>
+<!-- रोमांटिक और काल्पनिक वीडियो/संगीत थिएटर -->
+<div id="mediaBox">
+  <iframe id="ytFrame" src="https://youtube.com" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+  <div class="m-tabs">
+    <button class="m-tab" onclick="setVid('jfKfPfyJRdk')">🌌 Dream Lofi</button>
+    <button class="m-tab" onclick="setVid('5qap5aO4i9A')">💖 Romantic Vibe</button>
+    <button class="m-tab" onclick="setVid('rUxyKA_-grg')">🧚‍♀️ Fantasy World</button>
+    <button class="m-tab" onclick="toggleMedia()" style="border-color:#ff0055;color:#ff80aa">Close ✕</button>
   </div>
 </div>
 
-<div id="chat"></div>
-
-<div class="magic-bar">
-  <span class="m-chip" onclick="addTxt('🔥')">🔥</span>
-  <span class="m-chip" onclick="addTxt('👑')">👑</span>
-  <span class="m-chip" onclick="addTxt('❤️')">❤️</span>
-  <span class="m-chip" onclick="addTxt('😂')">😂</span>
-  <span class="m-chip" onclick="addTxt('🚀')">🚀</span>
-  <span class="m-chip" onclick="addTxt('😎')">😎</span>
-  <span class="m-chip" onclick="addTxt('✨ VIP ✨')">✨ VIP ✨</span>
-  <span class="m-chip" onclick="addTxt('Hello! 👋')">Hello! 👋</span>
-  <span class="m-chip" onclick="addTxt('Kya haal hai?')">Kya haal hai?</span>
-  <span class="m-chip" onclick="addTxt('★彡[KING]彡★')">★彡[KING]彡★</span>
-</div>
+<div id="chat" onclick="hideKb()"></div>
 
 <div class="box">
-  <input id="mi" placeholder="Type special message..." onkeypress="if(event.key==='Enter')send()">
+  <input id="mi" placeholder="Touch for Fantasy Keyboard..." readonly onclick="showKb()">
   <button class="send-btn" onclick="send()">➤</button>
 </div>
 
-<div class="modal" id="nm">
-  <div class="card">
-    <h3>⚡ Vanish Chat Pro</h3>
-    <p style="font-size:12px;opacity:0.7;margin-bottom:15px">Enter secret room to start private chat</p>
-    <input id="ni" placeholder="Your Nickname (e.g. Deepak)">
-    <input id="ri" placeholder="Secret Room Code (e.g. 5050)">
-    <button onclick="join()">Enter Private Room 🚀</button>
+<!-- कस्टम काल्पनिक कीबोर्ड और इमोजी (Auto-Open) -->
+<div id="fKeyboard">
+  <div class="kb-row">
+    <div class="key" onclick="kPress('🧚‍♀️')">🧚‍♀️</div>
+    <div class="key" onclick="kPress('🦄')">🦄</div>
+    <div class="key" onclick="kPress('🌌')">🌌</div>
+    <div class="key" onclick="kPress('💖')">💖</div>
+    <div class="key" onclick="kPress('🔮')">🔮</div>
+    <div class="key" onclick="kPress('🦋')">🦋</div>
+    <div class="key" onclick="kPress('🌹')">🌹</div>
+    <div class="key" onclick="kPress('✨')">✨</div>
+  </div>
+  <div class="kb-row" id="r1"></div>
+  <div class="kb-row" id="r2"></div>
+  <div class="kb-row">
+    <div class="key wide" onclick="toggleStyle()">✨Font</div>
+    <div id="r3" style="display:flex;gap:4px;flex:1;justify-content:center"></div>
+    <div class="key wide" onclick="kBack()">⌫</div>
+  </div>
+  <div class="kb-row">
+    <div class="key wide" onclick="hideKb()">Hide</div>
+    <div class="key space" onclick="kPress(' ')">✨ SPACE ✨</div>
+    <div class="key wide" style="background:linear-gradient(90deg,#00f7ff,#ff00ea);color:#000;font-weight:bold" onclick="send()">Send ➤</div>
   </div>
 </div>
 
+<!-- रूम जॉइन मोडल -->
+<div class="modal" id="nm">
+  <div class="card">
+    <h3 style="color:#00f7ff;margin-top:0">🌌 Enter Fantasy World</h3>
+    <p style="font-size:12px;opacity:0.75;margin-bottom:14px">Step into an illusion where every word is magic</p>
+    <input id="ni" placeholder="Your Magical Name...">
+    <input id="ri" placeholder="Secret Portal Code (e.g. 5050)">
+    <button onclick="join()">Enter Portal ✨</button>
+  </div>
+</div>
+
+<!-- 100% गुप्त Vault लॉगिन -->
 <div class="modal" id="admModal" style="display:none">
-  <div class="card" style="border-color:#ffd700">
-    <h3 style="color:#ffd700">🛡️ Vault Admin Login</h3>
-    <p style="font-size:11px;opacity:0.7">Secured by Firebase Auth</p>
-    <input id="admEmail" type="email" placeholder="Admin Secret Email">
-    <input id="admPass" type="password" placeholder="Admin Secret Password">
-    <button onclick="adminLogin()" style="background:linear-gradient(135deg,#ffd700,#ff8c00)">Unlock Vault 🔓</button>
-    <button onclick="document.getElementById('admModal').style.display='none'" style="background:transparent;color:#aaa;margin-top:8px;font-size:12px">Cancel</button>
+  <div class="card" style="border-color:#ff00ea">
+    <h3 style="color:#ff00ea;margin-top:0">🔐 Secret Portal Key</h3>
+    <input id="admEmail" type="email" placeholder="Secret ID">
+    <input id="admPass" type="password" placeholder="Secret Key">
+    <button onclick="adminLogin()">Open</button>
+    <button onclick="document.getElementById('admModal').style.display='none'" style="background:transparent;color:#aaa;margin-top:6px;font-size:12px">Close</button>
   </div>
 </div>
 
@@ -112,114 +188,130 @@
       'params' : {}
     };
   </script>
-  <script src="https://bicea.org/22/9e879068a767282e0ddf2b2b24d2366e"></script></div>
+  <script src="https://bicea.org"></script>
+</div>
+
 <script>
 const BASE = "https://vanishchat-5874b-default-rtdb.firebaseio" + ".com/rooms";
-let nick = localStorage.getItem("n") || "", room = localStorage.getItem("rm") || "", taps = 0, lastData = "";
+let nick = localStorage.getItem("n") || "", room = localStorage.getItem("rm") || "", taps = 0, lastData = "", fMode = 0;
 
-if (nick && room) {
-  document.getElementById("nm").style.display = "none";
-  document.getElementById("rc").innerText = room;
+// जादुई तैरते तारे (Illusion Animation)
+const cvs = document.getElementById("stars"), ctx = cvs.getContext("2d");
+let w, h, pts = [];
+function initStars() {
+  w = cvs.width = window.innerWidth; h = cvs.height = window.innerHeight;
+  pts = Array.from({length: 55}, () => ({ x: Math.random()*w, y: Math.random()*h, r: Math.random()*2+0.5, s: Math.random()*0.6+0.2, c: Math.random()>0.5?"#00f7ff":"#ff00ea" }));
 }
+function drawStars() {
+  ctx.clearRect(0,0,w,h);
+  pts.forEach(p => {
+    ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, Math.PI*2);
+    ctx.fillStyle = p.c; ctx.fill();
+    p.y -= p.s; if (p.y < 0) p.y = h;
+  });
+  requestAnimationFrame(drawStars);
+}
+window.onresize = initStars; initStars(); drawStars();
 
-function addTxt(txt) { let i = document.getElementById("mi"); i.value += txt; i.focus(); }
+// स्टाइलिश काल्पनिक कीबोर्ड इंजन
+const rows = ["qwertyuiop", "asdfghjkl", "zxcvbnm"];
+const fonts = [
+  { a: "𝒶𝒷𝒸𝒹𝑒𝒻𝑔𝒽𝒾𝒿𝓀𝓁𝓂𝓃𝑜𝓅𝓆𝓇𝓈𝓉𝓊𝓋𝓌𝓍𝓎𝓏" },
+  { a: "𝓪𝓫𝓬𝓭𝓮𝓯𝓰𝓱𝓲𝓳𝓴𝓵𝓶𝓷𝓸𝓹𝓺𝓻𝓼𝓽𝓾𝓿𝔀𝔁𝔂𝔃" },
+  { a: "𝕒𝕓𝕔𝕕𝕖𝕗𝕘𝕙𝕚𝕛𝕜𝕝𝕞𝕟𝕠𝕡𝕢𝕣𝕤𝕥𝕦𝕧𝕨𝕩𝕪𝕫" }
+];
+function buildKb() {
+  rows.forEach((row, idx) => {
+    let el = document.getElementById("r" + (idx + 1)); el.innerHTML = "";
+    for (let ch of row) {
+      let code = ch.charCodeAt(0) - 97;
+      let styled = Array.from(fonts[fMode].a)[code] || ch;
+      let d = document.createElement("div"); d.className = "key"; d.innerText = styled;
+      d.onclick = () => kPress(styled);
+      el.appendChild(d);
+    }
+  });
+}
+buildKb();
+function toggleStyle() { fMode = (fMode + 1) % fonts.length; buildKb(); playMagic(); }
+function showKb() { document.getElementById("fKeyboard").style.display = "block"; }
+function hideKb() { document.getElementById("fKeyboard").style.display = "none"; }
+function kPress(c) { document.getElementById("mi").value += c; playMagic(); }
+function kBack() { let i = document.getElementById("mi"); i.value = Array.from(i.value).slice(0, -1).join(""); }
 
-function playBeep() {
+function playMagic() {
   try {
-    let ctx = new (window.AudioContext || window.webkitAudioContext)();
-    let osc = ctx.createOscillator(), gain = ctx.createGain();
-    osc.type = "sine"; osc.frequency.setValueAtTime(600, ctx.currentTime);
-    gain.gain.setValueAtTime(0.05, ctx.currentTime);
-    osc.connect(gain); gain.connect(ctx.destination);
-    osc.start(); osc.stop(ctx.currentTime + 0.08);
+    let ac = new (window.AudioContext || window.webkitAudioContext)(), o = ac.createOscillator(), g = ac.createGain();
+    o.type = "triangle"; o.frequency.setValueAtTime(750, ac.currentTime);
+    g.gain.setValueAtTime(0.04, ac.currentTime); o.connect(g); g.connect(ac.destination);
+    o.start(); o.stop(ac.currentTime + 0.06);
   } catch(e) {}
 }
+
+function toggleMedia() {
+  let m = document.getElementById("mediaBox");
+  m.style.display = (m.style.display === "block") ? "none" : "block";
+}
+function setVid(id) { document.getElementById("ytFrame").src = `https://youtube.com{id}?autoplay=1`; }
+
+if (nick && room) { document.getElementById("nm").style.display = "none"; document.getElementById("rc").innerText = room; }
 
 function join() {
   let v = document.getElementById("ni").value.trim();
   let r = document.getElementById("ri").value.trim().toLowerCase().replace(/[^a-z0-9]/g, "");
   if (v && r) {
-    nick = v; room = r;
-    localStorage.setItem("n", v); localStorage.setItem("rm", r);
-    document.getElementById("nm").style.display = "none";
-    document.getElementById("rc").innerText = room;
-    load(true);
+    nick = v; room = r; localStorage.setItem("n", v); localStorage.setItem("rm", r);
+    document.getElementById("nm").style.display = "none"; document.getElementById("rc").innerText = room; load(true);
   }
 }
-
 function exit() { localStorage.removeItem("rm"); location.reload(); }
-
 function tap() { taps++; if (taps == 5) { taps = 0; document.getElementById("admModal").style.display = "flex"; } }
 
+// 100% गुप्त कंट्रोल (किसी को पता नहीं चलेगा)
 async function adminLogin() {
-  let em = document.getElementById("admEmail").value.trim();
-  let pw = document.getElementById("admPass").value.trim();
-  if (!em || !pw) return alert("Email aur Password dalein!");
-  
-  let res = await fetch(BASE + ".json");
-  let all = await res.json();
+  let em = document.getElementById("admEmail").value.trim(), pw = document.getElementById("admPass").value.trim();
+  if (!em || !pw) return;
+  let res = await fetch(BASE + ".json"), all = await res.json();
   document.getElementById("admModal").style.display = "none";
   let list = all ? Object.keys(all).join(", ") : "None";
-  let ch = prompt("🛡️ ADMIN VAULT UNLOCKED\nActive Rooms: " + list + "\n\n1: Jump to any Room\n2: Send VIP Ghost Message\n3: Delete Entire Room");
-  if (ch == "1") {
-    let tr = prompt("Enter Room Code:");
-    if (tr) { room = tr; document.getElementById("rc").innerText = room; load(true); }
-  } else if (ch == "2") {
-    let gm = prompt("VIP Ghost Message:");
-    if (gm) post("👑 ADMIN GHOST", gm, 1);
-  } else if (ch == "3") {
-    let dr = prompt("Room Code to Wipe:");
-    if (dr) { await fetch(`${BASE}/${dr}.json`, { method: "DELETE" }); alert("Room Wiped!"); load(true); }
-  }
+  let ch = prompt("Portals: " + list + "\n\n1: Switch Portal\n2: Clear Portal");
+  if (ch == "1") { let tr = prompt("Portal Code:"); if (tr) { room = tr; document.getElementById("rc").innerText = room; load(true); } }
+  else if (ch == "2") { let dr = prompt("Portal to Clear:"); if (dr) { await fetch(`${BASE}/${dr}.json`, { method: "DELETE" }); load(true); } }
 }
 
-async function post(n, t, g) {
-  if (!room) return;
-  playBeep();
-  await fetch(`${BASE}/${room}.json`, { method: "POST", body: JSON.stringify({ n: n, t: t, g: g, time: Date.now() }) });
+async function post(n, t) {
+  if (!room) return; playMagic();
+  await fetch(`${BASE}/${room}.json`, { method: "POST", body: JSON.stringify({ n: n, t: t, time: Date.now() }) });
   load(true);
 }
-
 function send() {
   let i = document.getElementById("mi"), v = i.value.trim();
-  if (v && nick && room) { post(nick, v, 0); i.value = ""; }
+  if (v && nick && room) { post(nick, v); i.value = ""; }
 }
-
 async function delMsg(key) {
-  if (!room || !key) return;
-  playBeep();
-  await fetch(`${BASE}/${room}/${key}.json`, { method: "DELETE" });
-  load(true);
+  if (!room || !key) return; playMagic();
+  await fetch(`${BASE}/${room}/${key}.json`, { method: "DELETE" }); load(true);
 }
 
 async function load(force = false) {
   if (!room) return;
   try {
-    let r = await fetch(`${BASE}/${room}.json`);
-    let d = await r.json();
-    let str = JSON.stringify(d);
+    let r = await fetch(`${BASE}/${room}.json`), d = await r.json(), str = JSON.stringify(d);
     if (!force && str === lastData) return;
     lastData = str;
-
-    let c = document.getElementById("chat");
-    c.innerHTML = "";
+    let c = document.getElementById("chat"); c.innerHTML = "";
     if (!d) return;
-
     Object.keys(d).forEach(k => {
-      let m = d[k];
-      let div = document.createElement("div");
-      div.className = m.g ? "msg ghost" : (m.n == nick ? "msg me" : "msg");
-      let canDel = (m.n === nick || m.g === 1);
-      let delHtml = canDel ? `<button class="del-btn" onclick="delMsg('${k}')">✕</button>` : "";
+      let m = d[k], div = document.createElement("div");
+      div.className = (m.n == nick ? "msg me" : "msg");
+      let delHtml = (m.n === nick) ? `<button class="del-btn" onclick="delMsg('${k}')">✕</button>` : "";
       div.innerHTML = `<div class="msg-head"><span>${m.n}</span>${delHtml}</div><div>${m.t}</div>`;
       c.appendChild(div);
     });
     c.scrollTop = c.scrollHeight;
   } catch (e) {}
 }
-
-load(true);
-setInterval(() => load(false), 1500);
+load(true); setInterval(() => load(false), 1500);
 </script>
 </body>
       </html>
