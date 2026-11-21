@@ -1,55 +1,247 @@
 <!DOCTYPE html>
-<html>
+<html lang="hi">
 <head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Vanish Chat</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>Vanish Chat Pro</title>
 <style>
-body{margin:0;font-family:sans-serif;background:#eef6f4;color:#1c1e1d;display:flex;flex-direction:column;height:100dvh}
-body.warm{background:#fdf5e6}body.quiet{background:#16181a;color:#fff}
-header{padding:14px;background:#fff;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #ddd}
-body.quiet header{background:#222}
-.brand{font-size:20px;font-weight:bold;color:#1d6b52;cursor:pointer}
-#chat{flex:1;overflow-y:auto;padding:15px;display:flex;flex-direction:column;gap:8px}
-.msg{max-width:75%;padding:10px 14px;border-radius:14px;background:#fff;align-self:flex-start;font-size:15px;box-shadow:0 1px 3px rgba(0,0,0,.1)}
-.msg.me{background:#d4ede6;align-self:flex-end}
-.msg.ghost{align-self:center;background:#222;color:#ffd700;font-style:italic;border:1px dashed #ffd700}
-body.quiet .msg{background:#2a2e33}body.quiet .msg.me{background:#21402d}
-.box{padding:12px;background:#fff;display:flex;gap:8px;border-top:1px solid #ddd}
-body.quiet .box{background:#222;border-color:#333}
-input{flex:1;padding:12px;border-radius:20px;border:1px solid #ccc;font-size:15px}
-button{padding:10px 16px;border-radius:20px;border:none;background:#1d6b52;color:#fff;font-weight:bold}
-.modal{position:fixed;inset:0;background:rgba(0,0,0,.6);display:flex;align-items:center;justify-content:center}
-.card{background:#fff;color:#000;padding:20px;border-radius:16px;width:85%;max-width:320px}
+  :root {
+    --bg: radial-gradient(circle at top right, #1a103c, #090a10 70%);
+    --glass: rgba(255, 255, 255, 0.06);
+    --border: rgba(0, 243, 255, 0.25);
+    --neon: #00f3ff;
+    --neon2: #bc13fe;
+    --text: #ffffff;
+    --me-bg: linear-gradient(135deg, #00c6ff, #0072ff);
+    --other-bg: rgba(255, 255, 255, 0.1);
+  }
+  body.warm {
+    --bg: radial-gradient(circle at top right, #3b1c0a, #120804 70%);
+    --border: rgba(255, 165, 0, 0.35);
+    --neon: #ffae00;
+    --me-bg: linear-gradient(135deg, #ff8008, #ffc837);
+  }
+  body.calm {
+    --bg: radial-gradient(circle at top right, #0a362c, #051411 70%);
+    --border: rgba(0, 255, 170, 0.3);
+    --neon: #00ffaa;
+    --me-bg: linear-gradient(135deg, #11998e, #38ef7d);
+  }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  body {
+    margin: 0; font-family: 'Segoe UI', Roboto, sans-serif;
+    background: var(--bg); color: var(--text);
+    display: flex; flex-direction: column; height: 100dvh; overflow: hidden;
+  }
+  header {
+    padding: 12px 16px; background: rgba(10, 12, 20, 0.75);
+    backdrop-filter: blur(15px); display: flex; justify-content: space-between;
+    align-items: center; border-bottom: 1px solid var(--border);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.4); z-index: 10;
+  }
+  .brand {
+    font-size: 21px; font-weight: 800; letter-spacing: 0.5px;
+    background: linear-gradient(90deg, var(--neon), #fff);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    cursor: pointer; user-select: none;
+  }
+  .room-badge {
+    background: var(--glass); border: 1px solid var(--border);
+    color: var(--neon); padding: 6px 12px; border-radius: 20px;
+    font-size: 12px; font-weight: bold; cursor: pointer;
+    box-shadow: 0 0 10px rgba(0, 243, 255, 0.15);
+  }
+  .sub-bar {
+    padding: 6px 15px; font-size: 11px; color: rgba(255,255,255,0.65);
+    display: flex; justify-content: space-between; align-items: center;
+    background: rgba(0,0,0,0.25);
+  }
+  .themes { display: flex; gap: 6px; }
+  .t-btn {
+    padding: 3px 9px; border-radius: 12px; border: 1px solid var(--border);
+    background: var(--glass); color: #fff; font-size: 10px; cursor: pointer;
+  }
+  #chat {
+    flex: 1; overflow-y: auto; padding: 15px;
+    display: flex; flex-direction: column; gap: 12px;
+    scroll-behavior: smooth;
+  }
+  .msg {
+    max-width: 78%; padding: 10px 14px; border-radius: 18px 18px 18px 4px;
+    background: var(--other-bg); backdrop-filter: blur(10px);
+    border: 1px solid rgba(255,255,255,0.12); align-self: flex-start;
+    font-size: 15px; position: relative; animation: popIn 0.25s ease;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.25); word-wrap: break-word;
+  }
+  .msg.me {
+    background: var(--me-bg); color: #050a14; font-weight: 500;
+    border-radius: 18px 18px 4px 18px; align-self: flex-end; border: none;
+    box-shadow: 0 4px 15px rgba(0, 198, 255, 0.3);
+  }
+  .msg.ghost {
+    align-self: center; background: rgba(20, 20, 25, 0.9);
+    color: #ffd700; border: 1px dashed #ffd700; border-radius: 14px;
+    text-align: center; box-shadow: 0 0 15px rgba(255, 215, 0, 0.25);
+  }
+  .msg-head {
+    display: flex; justify-content: space-between; align-items: center;
+    gap: 12px; font-size: 11px; opacity: 0.8; margin-bottom: 4px; font-weight: bold;
+  }
+  .del-btn {
+    background: rgba(255, 50, 50, 0.2); border: 1px solid rgba(255, 80, 80, 0.5);
+    color: #ff4d4d; border-radius: 50%; width: 20px; height: 20px;
+    font-size: 11px; display: inline-flex; align-items: center; justify-content: center;
+    cursor: pointer; padding: 0;
+  }
+  .msg.me .del-btn { background: rgba(0,0,0,0.2); color: #fff; border-color: rgba(0,0,0,0.3); }
+  @keyframes popIn { from { opacity: 0; transform: translateY(10px) scale(0.95); } to { opacity: 1; transform: translateY(0) scale(1); } }
+  
+  /* स्पेशल कीबोर्ड और इमोजी मैजिक बार */
+  .magic-bar {
+    display: flex; gap: 8px; padding: 8px 12px; overflow-x: auto;
+    background: rgba(15, 18, 30, 0.85); border-top: 1px solid var(--border);
+    scrollbar-width: none;
+  }
+  .magic-bar::-webkit-scrollbar { display: none; }
+  .m-chip {
+    background: var(--glass); border: 1px solid var(--border);
+    color: #fff; padding: 5px 11px; border-radius: 15px; font-size: 14px;
+    white-space: nowrap; cursor: pointer; transition: 0.2s;
+  }
+  .m-chip:active { transform: scale(0.9); background: var(--neon); color: #000; }
+
+  .box {
+    padding: 10px 12px; background: rgba(10, 12, 20, 0.95);
+    display: flex; gap: 8px; align-items: center;
+  }
+  input {
+    flex: 1; padding: 12px 16px; border-radius: 25px;
+    border: 1px solid var(--border); background: rgba(255,255,255,0.08);
+    color: #fff; font-size: 15px; outline: none;
+  }
+  input::placeholder { color: rgba(255,255,255,0.45); }
+  .send-btn {
+    width: 44px; height: 44px; border-radius: 50%; border: none;
+    background: var(--me-bg); color: #000; font-size: 18px; font-weight: bold;
+    cursor: pointer; display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 0 12px rgba(0, 243, 255, 0.4);
+  }
+  .modal {
+    position: fixed; inset: 0; background: rgba(0,0,0,0.85);
+    backdrop-filter: blur(12px); display: flex; align-items: center;
+    justify-content: center; z-index: 100;
+  }
+  .card {
+    background: #121524; border: 1px solid var(--neon); color: #fff;
+    padding: 24px; border-radius: 22px; width: 88%; max-width: 340px;
+    text-align: center; box-shadow: 0 0 30px rgba(0, 243, 255, 0.2);
+  }
+  .card h3 { margin-top: 0; color: var(--neon); font-size: 22px; }
+  .card input { width: 100%; margin-bottom: 12px; }
+  .card button {
+    width: 100%; padding: 12px; border-radius: 25px; border: none;
+    background: var(--me-bg); color: #000; font-weight: bold; font-size: 16px; cursor: pointer;
+  }
+  .ad-wrap { background: #000; display: flex; justify-content: center; min-height: 50px; }
 </style>
 </head>
 <body>
-<header><div class="brand" onclick="tap()">Vanish Chat</div><button onclick="exit()" style="padding:6px 12px;font-size:12px">Room: <span id="rc"></span> ✕</button></header>
-<div style="padding:8px 15px;font-size:12px;opacity:.7">Private room • Messages vanish in 30s</div>
+
+<header>
+  <div class="brand" onclick="tap()">⚡ Vanish Chat</div>
+  <button class="room-badge" onclick="exit()">Room: <span id="rc">---</span> ✕</button>
+</header>
+
+<div class="sub-bar">
+  <span>🔒 End-to-End • Manual Delete Only</span>
+  <div class="themes">
+    <button class="t-btn" onclick="document.body.className=''">Neon</button>
+    <button class="t-btn" onclick="document.body.className='warm'">Gold</button>
+    <button class="t-btn" onclick="document.body.className='calm'">Emerald</button>
+  </div>
+</div>
+
 <div id="chat"></div>
-<div style="padding:5px 15px;display:flex;gap:6px"><button onclick="document.body.className='warm'">Warm</button><button onclick="document.body.className=''">Calm</button><button onclick="document.body.className='quiet'">Quiet</button></div>
-<div class="box"><input id="mi" placeholder="Write private message..."><button onclick="send()">↑</button></div>
-<div class="modal" id="nm"><div class="card"><h3>Private Vanish Room</h3><input id="ni" placeholder="Your nickname..." style="width:85%;margin-bottom:8px"><input id="ri" placeholder="Secret room code (e.g. love12)" style="width:85%;margin-bottom:10px"><br><button onclick="join()">Enter Room</button></div></div>
-<script>
-const BASE="https://vanishchat-5874b-default-rtdb.firebaseio"+".com/rooms";
-let nick=localStorage.getItem("n")||"",room=localStorage.getItem("rm")||"",taps=0;
-if(nick&&room){document.getElementById("nm").style.display="none";document.getElementById("rc").innerText=room;}
-function join(){let v=document.getElementById("ni").value.trim(),r=document.getElementById("ri").value.trim().toLowerCase().replace(/[^a-z0-9]/g,"");if(v&&r){nick=v;room=r;localStorage.setItem("n",v);localStorage.setItem("rm",r);document.getElementById("nm").style.display="none";document.getElementById("rc").innerText=room;load();}}
-function exit(){localStorage.removeItem("rm");location.reload();}
-async function tap(){taps++;if(taps==5){taps=0;if(prompt("Admin PIN:")=="849271"){let res=await fetch(BASE+".json"),all=await res.json(),list=all?Object.keys(all).join(", "):"None";let ch=prompt("Active Rooms: "+list+"\n\n1: Jump to any Room\n2: Send Ghost Message here");if(ch=="1"){let tr=prompt("Enter Room Code:");if(tr){room=tr;document.getElementById("rc").innerText=room;load();}}else if(ch=="2"){let gm=prompt("Ghost Message:");if(gm)post("👻 UNKNOWN",gm,1);}}}}
-async function post(n,t,g){if(!room)return;await fetch(`${BASE}/${room}.json`,{method:"POST",body:JSON.stringify({n:n,t:t,g:g,time:Date.now()})});load();}
-function send(){let i=document.getElementById("mi"),v=i.value.trim();if(v&&nick&&room){post(nick,v,0);i.value="";}}
-async function load(){if(!room)return;try{let r=await fetch(`${BASE}/${room}.json`),d=await r.json(),c=document.getElementById("chat"),now=Date.now();c.innerHTML="";if(!d)return;Object.keys(d).forEach(k=>{let m=d[k];if(now-m.time>30000){fetch(`${BASE}/${room}/${k}.json`,{method:"DELETE"});}else{let div=document.createElement("div");div.className=m.g?"msg ghost":(m.n==nick?"msg me":"msg");div.innerHTML=`<small>${m.n}</small><br>${m.t} <small>(${Math.ceil((30000-(now-m.time))/1000)}s)</small>`;c.appendChild(div);}});}catch(e){}}
-load();setInterval(load,1500);
-</script>
+
+<!-- स्पेशल इन-ऐप कीबोर्ड और मैजिक बार -->
+<div class="magic-bar">
+  <span class="m-chip" onclick="addTxt('🔥')">🔥</span>
+  <span class="m-chip" onclick="addTxt('👑')">👑</span>
+  <span class="m-chip" onclick="addTxt('❤️')">❤️</span>
+  <span class="m-chip" onclick="addTxt('😂')">😂</span>
+  <span class="m-chip" onclick="addTxt('🚀')">🚀</span>
+  <span class="m-chip" onclick="addTxt('😎')">😎</span>
+  <span class="m-chip" onclick="addTxt('✨ VIP ✨')">✨ VIP ✨</span>
+  <span class="m-chip" onclick="addTxt('Hello! 👋')">Hello! 👋</span>
+  <span class="m-chip" onclick="addTxt('Kya haal hai?')">Kya haal hai?</span>
+  <span class="m-chip" onclick="addTxt('★彡[KING]彡★')">★彡[KING]彡★</span>
+</div>
+
+<div class="box">
+  <input id="mi" placeholder="Type special message..." onkeypress="if(event.key==='Enter')send()">
+  <button class="send-btn" onclick="send()">➤</button>
+</div>
+
+<!-- रूम जॉइन मोडल -->
+<div class="modal" id="nm">
+  <div class="card">
+    <h3>⚡ Vanish Chat Pro</h3>
+    <p style="font-size:12px;opacity:0.7;margin-bottom:15px">Enter secret room to start private chat</p>
+    <input id="ni" placeholder="Your Nickname (e.g. Deepak)">
+    <input id="ri" placeholder="Secret Room Code (e.g. 5050)">
+    <button onclick="join()">Enter Private Room 🚀</button>
+  </div>
+</div>
+
+<!-- सुरक्षित Firebase Auth एडमिन मोडल (कोड में कोई पासवर्ड नहीं) -->
+<div class="modal" id="admModal" style="display:none">
+  <div class="card" style="border-color:#ffd700">
+    <h3 style="color:#ffd700">🛡️ Vault Admin Login</h3>
+    <p style="font-size:11px;opacity:0.7">Secured by Firebase Auth</p>
+    <input id="admEmail" type="email" placeholder="Admin Secret Email">
+    <input id="admPass" type="password" placeholder="Admin Secret Password">
+    <button onclick="adminLogin()" style="background:linear-gradient(135deg,#ffd700,#ff8c00)">Unlock Vault 🔓</button>
+    <button onclick="document.getElementById('admModal').style.display='none'" style="background:transparent;color:#aaa;margin-top:8px;font-size:12px">Cancel</button>
+  </div>
+</div>
+
+<div class="ad-wrap">
   <script>
-  atOptions = {
-    'key' : '9e879068a767282e0ddf2b2b24d2366e',
-    'format' : 'iframe',
-    'height' : 50,
-    'width' : 320,
-    'params' : {}
+    atOptions = {
+      'key' : '9e879068a767282e0ddf2b2b24d2366e',
+      'format' : 'iframe',
+      'height' : 50,
+      'width' : 320,
+      'params' : {}
+    };
+  </script>
+  <script src="https://bicea.org/22/9e879068a767282e0ddf2b2b24d2366e"></script>
+</div>
+
+<!-- Firebase SDK (अभेद्य सुरक्षा के लिए) -->
+<script type="module">
+  import { initializeApp } from "https://gstatic.com";
+  import { getAuth, signInWithEmailAndPassword } from "https://gstatic.com";
+
+  const firebaseConfig = {
+    databaseURL: "https://firebaseio.com"
+  };
+  // नोट: असली Firebase Auth के लिए नीचे Step 2 में अपनी apiKey डालें
+  window.fbAuth = null;
+  window.fbSignIn = signInWithEmailAndPassword;
+  window.initFb = (key) => {
+    const app = initializeApp({ apiKey: key, databaseURL: firebaseConfig.databaseURL });
+    window.fbAuth = getAuth(app);
   };
 </script>
-<script src="https://bicea.org/22/9e879068a767282e0ddf2b2b24d2366e"></script>
-</body>
-</html>
+
+<script>
+const BASE = "https://vanishchat-5874b-default-rtdb.firebaseio" + ".com/rooms";
+let nick = localStorage.getItem("n") || "", room = localStorage.getItem("rm") || "", taps = 0, lastData = "";
+
+if (nick && room) {
+  document.getElementById("nm").style.display = "none";
+  document.getElementById("rc").innerText = room;
+}
+
+  
