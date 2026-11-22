@@ -4,374 +4,50 @@
 <meta charset="UTF-8">
 <meta name="viewport" 
   content="width=device-width,initial-scale=1">
-<title>Vanish Fantasy</title>
+<title>Video App</title>
 <style>
-  * { box-sizing: border-box; font-family: sans-serif; }
   body {
-    margin: 0; color: #fff; height: 100dvh;
+    margin: 0; background: #000;
+    color: #fff; font-family: sans-serif;
     display: flex; flex-direction: column;
-    background: radial-gradient(#240944, #05010d);
-    overflow: hidden; transition: 0.15s;
+    height: 100dvh;
   }
-  body.blurred { filter: blur(25px); }
-  header {
-    padding: 10px 12px; display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background: rgba(15, 5, 35, 0.9);
-    border-bottom: 1px solid #ff00ea55;
+  iframe {
+    width: 100%; height: 65%;
+    border: none; background: #111;
   }
-  .brand {
-    font-size: 19px; font-weight: 900;
-    background: linear-gradient(
-      90deg, #00f7ff, #ff00ea, #ffe600
-    );
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    cursor: pointer;
+  .btns {
+    padding: 15px; display: flex;
+    gap: 10px; justify-content: center;
+    flex-wrap: wrap;
   }
-  .h-btn {
-    border: none; padding: 6px 9px;
-    border-radius: 12px; font-size: 11px;
-    font-weight: bold; color: #fff;
-    background: #ffffff18; cursor: pointer;
+  button {
+    padding: 12px 18px; border: none;
+    border-radius: 25px; color: #fff;
+    background: #ff0055; font-size: 14px;
+    font-weight: bold; cursor: pointer;
   }
-  #stories {
-    display: flex; gap: 10px; padding: 8px;
-    overflow-x: auto; background: #0a0318;
-    border-bottom: 1px solid #00f7ff33;
-  }
-  .st {
-    min-width: 54px; text-align: center;
-    font-size: 10px; cursor: pointer;
-  }
-  .st-ring {
-    width: 48px; height: 48px; margin: auto;
-    border-radius: 50%; padding: 2px;
-    background: linear-gradient(
-      45deg, #ffe600, #ff00ea, #00f7ff
-    );
-  }
-    .st-in {
-    width: 100%; height: 100%;
-    border-radius: 50%; background: #160730;
-    display: flex; align-items: center;
-    justify-content: center; font-size: 18px;
-  }
-  #mediaBox {
-    display: none; padding: 8px;
-    background: #0a0219; text-align: center;
-    border-bottom: 1px solid #ff00ea;
-  }
-  #mediaBox iframe {
-    width: 100%; height: 175px;
-    border-radius: 12px;
-    border: 1px solid #00f7ff;
-  }
-  #chat {
-    flex: 1; overflow-y: auto; padding: 12px;
-    display: flex; flex-direction: column;
-    gap: 10px;
-  }
-  .msg {
-    max-width: 82%; padding: 9px 13px;
-    border-radius: 18px; align-self: flex-start;
-    background: #230e46; font-size: 14.5px;
-    border: 1px solid #00f7ff44;
-    word-wrap: break-word;
-  }
-  .msg.me {
-    align-self: flex-end;
-    background: linear-gradient(
-      135deg, #ff00c8, #5a00ff
-    );
-    border: 1px solid #ff80e5;
-  }
-  .msg.ghost {
-    align-self: center; text-align: center;
-    background: #ff003333;
-    border: 1px dashed #ff0055;
-  }
-  .fun {
-    display: flex; justify-content: space-around;
-    padding: 6px; background: #120528;
-    border-top: 1px solid #00f7ff33;
-  }
-  .r-btn {
-    background: #ffffff14; border: none;
-    border-radius: 14px; padding: 4px 10px;
-    font-size: 15px; color: #fff;
-    cursor: pointer;
-    }
-    .box {
-    padding: 8px; background: #0c031c;
-    display: flex; gap: 6px;
-  }
-  #mi {
-    flex: 1; padding: 10px 14px;
-    border-radius: 22px; outline: none;
-    border: 1px solid #00f7ff;
-    background: #ffffff18; color: #fff;
-  }
-  .s-btn {
-    padding: 0 14px; border-radius: 22px;
-    border: none; font-weight: bold;
-    background: linear-gradient(
-      135deg, #00f7ff, #ff00ea
-    );
-    color: #000; cursor: pointer;
-  }
-  .fly {
-    position: fixed; bottom: 75px;
-    font-size: 28px; pointer-events: none;
-    animation: up 2s ease-out forwards;
-  }
-  @keyframes up {
-    to { transform: translateY(-70vh); opacity: 0; }
-  }
-  .modal {
-    position: fixed; inset: 0;
-    background: #04010af2; display: flex;
-    align-items: center;
-    justify-content: center; z-index: 99;
-  }
-  .card {
-    background: #14062b; color: #fff;
-    border: 1px solid #ff00ea;
-    padding: 20px; border-radius: 20px;
-    width: 88%; max-width: 340px;
-    text-align: center;
-  }
-  .card input {
-    width: 100%; padding: 11px;
-    margin-bottom: 10px; border-radius: 14px;
-    border: 1px solid #00f7ff;
-    background: #220b45; color: #fff;
-    text-align: center; outline: none;
-  }
-  .card button {
-    width: 100%; padding: 11px;
-    border-radius: 14px; border: none;
-    background: linear-gradient(
-      90deg, #ff0055, #7928ca
-    );
-    color: #fff; font-weight: bold;
-    margin-bottom: 8px; cursor: pointer;
-      }
 </style>
 </head>
 <body>
-<header>
-  <div class="brand" onclick="tap()">✨ Vanish</div>
-  <div>
-    <button class="h-btn" onclick="openCall()">📹</button>
-    <button class="h-btn" onclick="openTV()">🎬</button>
-    <button class="h-btn" onclick="shareApp()">📲</button>
-    <button class="h-btn" onclick="exitRoom()">
-      <span id="rc">global</span> ✕</button>
+  <iframe id="vid" 
+    src="https://youtube.com" 
+    allow="autoplay; encrypted-media" 
+    allowfullscreen>
+  </iframe>
+  <div class="btns">
+    <button onclick="play('jfKfPfyJRdk')">
+      🎵 Music Video</button>
+    <button onclick="play('5qap5aO4i9A')">
+      💖 Love Song</button>
+    <button onclick="play('rUxyKA_-grg')">
+      🎬 Chill Video</button>
   </div>
-</header>
-<div id="stories"></div>
-<div id="mediaBox">
-  <iframe id="vidFrame" src="" allow="autoplay; camera; microphone"></iframe>
-  <div style="margin-top:6px">
-    <button class="h-btn" onclick="setVid('jfKfPfyJRdk')">🌌 Lofi</button>
-    <button class="h-btn" onclick="setVid('5qap5aO4i9A')">💖 Love</button>
-    <button class="h-btn" onclick="closeTV()" style="background:#ff0033">Close ✕</button>
-  </div>
-</div>
-<div id="chat"></div>
-<div class="fun">
-  <button class="r-btn" onclick="react('💖')">💖</button>
-  <button class="r-btn" onclick="react('🌹')">🌹</button>
-  <button class="r-btn" onclick="react('🔥')">🔥</button>
-  <button class="r-btn" onclick="game()">🎲 Dare</button>
-</div>
-<div class="box">
-  <input id="mi" placeholder="Jaadui message likhein..." 
-    onkeypress="if(event.key==='Enter')send()">
-  <button class="h-btn" onclick="fancy()">✨Aa</button>
-  <button class="s-btn" onclick="send()">➤</button>
-</div>
-<div class="modal" id="nm">
-  <div class="card">
-    <h3 style="color:#00f7ff;margin-top:0">🌌 Vanish Fantasy</h3>
-    <input id="ni" placeholder="Apna Jaadui Naam...">
-    <input id="ri" value="global" placeholder="Room Code">
-    <button onclick="join()">Enter World ✨</button>
-  </div>
-</div>
-<div class="modal" id="adm" style="display:none">
-  <div class="card" style="border-color:#ff0033">
-    <h3 style="color:#ff0033;margin-top:0">☣️ 4-STAGE BOSS LOCK</h3>
-    <div id="s1"><input id="p1" type="password" placeholder="1. PIN Code">
-      <button onclick="chk1()">VERIFY PIN</button></div>
-    <div id="s2" style="display:none">
-      <button onmousedown="fpStart()" ontouchstart="fpStart()" 
-        onmouseup="fpEnd()" ontouchend="fpEnd()">👆 HOLD FINGER (3s)</button></div>
-    <div id="s3" style="display:none">
-      <button onclick="chk3()">🎙️ SPEAK SECRET</button></div>
-    <div id="s4" style="display:none"><input id="p4" type="password" placeholder="4. Master Key">
-      <button onclick="chk4()">🔓 UNLOCK</button></div>
-    <button onclick="document.getElementById('adm').style.display='none'" 
-      style="background:none;color:#888">Close</button>
-  </div>
-</div>
-  <div class="modal" id="boss" style="display:none">
-  <div class="card" style="border-color:#00f7ff">
-    <h3 style="color:#00f7ff;margin-top:0">🕵️‍♂️ GHOST BOSS</h3>
-    <div id="radar" style="font-size:11px;color:#00f7ff;margin-bottom:8px"></div>
-    <input id="gMsg" placeholder="Ghost Msg (8s me gayab)...">
-    <button onclick="sendGhost()">👻 Send Vanish Msg</button>
-    <button onclick="wipeRoom()" style="background:#990000">🔥 Wipe Room</button>
-    <button onclick="document.getElementById('boss').style.display='none'" 
-      style="background:none;color:#aaa">Hide ✕</button>
-  </div>
-</div>
-
-<div class="modal" id="stBox" style="display:none" onclick="this.style.display='none'">
-  <div class="card" style="background:linear-gradient(45deg,#ff007f,#7928ca)">
-    <h4 id="stUser" style="margin-top:0"></h4>
-    <p id="stTxt" style="font-size:18px;font-weight:bold"></p>
-  </div>
-</div>
-
 <script>
-var _R = atob("aHR0cHM6Ly92YW5pc2hjaGF0LTU4NzRiLWRlZmF1bHQtcnRkYi5maXJlYmFzZWlvLmNvbQ==");
-var _DB = _R + "/rooms", _RD = _R + "/radar", _ST = _R + "/stories";
-var _TRG = atob("Nzdzc29iIw==").split("").reverse().join("");
-var _K1 = (4741 * 2).toString();
-var _K3 = atob("bG9jb3RvcnAgd29kYWhzIGV0YXZpdGNh").split("").reverse().join("");
-var _K4 = atob("OTkhZ25pSyQ2MjAyI2hzaW5AQFY=").split("").reverse().join("");
-
-var nick = localStorage.getItem("n") || "", room = localStorage.getItem("rm") || "";
-var taps = 0, last = "", fpT = 0, isBoss = sessionStorage.getItem("bm") === "1";
-
-document.addEventListener("visibilitychange", () =>
-  document.body.classList.toggle("blurred", document.hidden));
-
-function fancy() {
-  var i = document.getElementById("mi");
-  if (!i.value.trim()) return;
-  var a = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
-  var b = Array.from("𝓪𝓫𝓬𝓭𝓮𝓯𝓰𝓱𝓲𝓳𝓴𝓵𝓶𝓷𝓸𝓹𝓺𝓻𝓼𝓽𝓾𝓿𝔀𝔁𝔂𝔃𝓐𝓑𝓒𝓓𝓔𝓕𝓖𝓗𝓘𝓙𝓚𝓛𝓜𝓝𝓞𝓟𝓠𝓡𝓢𝓣𝓤𝓥𝓦𝓧𝓨𝔃");
-  i.value = "✨ " + i.value.split("").map(c => a.includes(c) ? b[a.indexOf(c)] : c).join("") + " ✨";
-}
-
-function react(e) {
-  for (var x = 0; x < 7; x++) {
-    var d = document.createElement("div");
-    d.className = "fly"; d.innerText = e;
-    d.style.left = (15 + Math.random() * 70) + "%";
-    document.body.appendChild(d);
-    setTimeout(el => el.remove(), 2000, d);
+  function play(id) {
+    document.getElementById("vid").src = 
+      "https://youtube.com" + id + "?autoplay=1";
   }
-  if (nick && room) post(nick, e);
-}
-async function game() {
-  var q = ["🎯 TRUTH: Crush ka pehla akshar?", "🔥 DARE: Ek pyari shayari bhejo!", "🎯 TRUTH: Sabse bada secret?"];
-  if (nick && room) await post("🎲 (" + nick + ")", q[Math.floor(Math.random() * q.length)]);
-}
-
-async function addSt() {
-  var t = prompt("📸 Apna Jaadui Status likhein:");
-  if (t && t.trim()) {
-    await fetch(_ST + ".json", { method: "POST", body: JSON.stringify({ n: nick || "Star", t: t.trim() }) });
-    loadSt();
-  }
-}
-
-async function loadSt() {
-  try {
-    var r = await fetch(_ST + ".json"), d = await r.json(), b = document.getElementById("stories");
-    b.innerHTML = '<div class="st" onclick="addSt()"><div class="st-ring"><div class="st-in">+</div></div>Your Vibe</div>';
-    if (!d) return;
-    Object.keys(d).slice(-10).reverse().forEach(k => {
-      var s = d[k], el = document.createElement("div"); el.className = "st";
-      el.onclick = () => {
-        document.getElementById("stUser").innerText = "✨ " + s.n;
-        document.getElementById("stTxt").innerText = s.t;
-        document.getElementById("stBox").style.display = "flex";
-      };
-      el.innerHTML = '<div class="st-ring"><div class="st-in">' + (s.n ? s.n[0].toUpperCase() : "✨") + '</div></div>' + s.n;
-      b.appendChild(el);
-    });
-  } catch (e) {}
-}
-
-function openCall() { document.getElementById("mediaBox").style.display = "block"; document.getElementById("vidFrame").src = "https://jit.si_" + room; }
-function openTV() { document.getElementById("mediaBox").style.display = "block"; setVid("jfKfPfyJRdk"); }
-function setVid(id) { document.getElementById("vidFrame").src = "https://youtube.com" + id + "?autoplay=1"; }
-function closeTV() { document.getElementById("mediaBox").style.display = "none"; document.getElementById("vidFrame").src = ""; }
-
-function shareApp() {
-  var u = window.location.href.split("?")[0] + "?room=" + encodeURIComponent(room);
-  navigator.share ? navigator.share({ title: "Vanish Fantasy", url: u }) : (navigator.clipboard.writeText(u), alert("Link Copied:\n" + u));
-}
-
-async function join() {
-  var n = document.getElementById("ni").value.trim(), r = document.getElementById("ri").value.trim().toLowerCase() || "global";
-  if (!n) return alert("Naam likhein!");
-  nick = n; room = r; localStorage.setItem("n", nick); localStorage.setItem("rm", room);
-  document.getElementById("nm").style.display = "none"; document.getElementById("rc").innerText = room;
-  await fetch(_RD + "/" + nick.replace(/\W/g, "") + ".json", { method: "PUT", body: JSON.stringify({ n: nick, r: room }) });
-  load(true); loadSt();
-}
-
-function exitRoom() { localStorage.removeItem("rm"); document.getElementById("nm").style.display = "flex"; }
-async function post(n, t, g) { await fetch(_DB + "/" + room + ".json", { method: "POST", body: JSON.stringify({ n: n, t: t, g: !!g, tm: Date.now() }) }); load(true); }
-async function del(k) { await fetch(_DB + "/" + room + "/" + k + ".json", { method: "DELETE" }); load(true); }
-
-async function send() {
-  var i = document.getElementById("mi"), t = i.value.trim();
-  if (!t) return;
-  if (t === _TRG) { i.value = ""; return document.getElementById("adm").style.display = "flex"; }
-  i.value = ""; await post(nick, t, false);
-}
-
-async function load(f) {
-  if (!room) return;
-  try {
-    var r = await fetch(_DB + "/" + room + ".json"), raw = await r.text();
-    if (raw === last && !f) return; last = raw;
-    var d = JSON.parse(raw), c = document.getElementById("chat"); c.innerHTML = "";
-    if (!d) return;
-    Object.keys(d).forEach(k => {
-      var m = d[k];
-      if (m.g && Date.now() - m.tm > 8000) return del(k);
-      var div = document.createElement("div");
-      div.className = "msg" + (m.n === nick ? " me" : "") + (m.g ? " ghost" : "");
-      var xBtn = (m.n === nick || isBoss) ? ' <span onclick="del(\'' + k + '\')" style="color:#ff0055;cursor:pointer">✕</span>' : '';
-      div.innerHTML = '<div style="font-size:10px;opacity:0.8">' + m.n + xBtn + '</div>' + m.t;
-      c.appendChild(div);
-    });
-    c.scrollTop = c.scrollHeight;
-  } catch (e) {}
-}
-
-function tap() { taps++; if (taps >= 5) { taps = 0; isBoss ? openBoss() : (document.getElementById("adm").style.display = "flex"); } }
-function chk1() { document.getElementById("p1").value === _K1 ? (document.getElementById("s1").style.display = "none", document.getElementById("s2").style.display = "block") : alert("Wrong PIN!"); }
-function fpStart() { fpT = Date.now(); }
-function fpEnd() { Date.now() - fpT >= 2500 ? (document.getElementById("s2").style.display = "none", document.getElementById("s3").style.display = "block") : alert("Hold full 3 seconds!"); }
-function chk3() {
-  var R = window.SpeechRecognition || window.webkitSpeechRecognition;
-  if (!R) { document.getElementById("s3").style.display = "none"; document.getElementById("s4").style.display = "block"; return; }
-  var rec = new R(); rec.onresult = e => { e.results[0][0].transcript.toLowerCase().includes(_K3) ? (document.getElementById("s3").style.display = "none", document.getElementById("s4").style.display = "block") : alert("Denied!"); };
-  rec.start();
-}
-function chk4() { document.getElementById("p4").value === _K4 ? (sessionStorage.setItem("bm", "1"), isBoss = true, document.getElementById("adm").style.display = "none", openBoss()) : alert("Wrong Key!"); }
-async function openBoss() {
-  document.getElementById("boss").style.display = "flex";
-  var r = await fetch(_RD + ".json"), d = await r.json();
-  document.getElementById("radar").innerHTML = d ? Object.values(d).map(u => "👤 " + u.n + " (" + u.r + ")").join(" | ") : "No users";
-}
-async function sendGhost() { var g = document.getElementById("gMsg"); if (g.value.trim()) { await post("👻 GHOST", g.value.trim(), true); g.value = ""; } }
-async function wipeRoom() { if (confirm("Wipe all chats?")) { await fetch(_DB + "/" + room + ".json", { method: "DELETE" }); load(true); } }
-
-var pr = new URLSearchParams(window.location.search).get("room");
-if (pr) document.getElementById("ri").value = pr;
-if (nick && room) { document.getElementById("nm").style.display = "none"; document.getElementById("rc").innerText = room; load(true); loadSt(); }
-setInterval(() => { if (room) load(false); }, 2500);
 </script>
 </body>
 </html>
