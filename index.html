@@ -5,70 +5,60 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
 <title>Vanish Fantasy</title>
 <style>
-  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; user-select: none; -webkit-user-select: none; }
-  body {
-    margin: 0; font-family: 'Segoe UI', sans-serif;
-    background: radial-gradient(circle at 50% 20%, #1d0836, #05010d 80%);
-    color: #fff; display: flex; flex-direction: column; height: 100dvh; overflow: hidden;
-    transition: filter 0.15s ease;
-  }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  body { margin: 0; font-family: 'Segoe UI', sans-serif; background: radial-gradient(circle at 50% 15%, #240944, #05010d 85%); color: #fff; display: flex; flex-direction: column; height: 100dvh; overflow: hidden; transition: filter 0.15s ease; }
   body.blurred { filter: blur(22px) brightness(0.1); pointer-events: none; }
   #stars { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
-  header {
-    padding: 8px 6px; background: rgba(15, 5, 35, 0.88);
-    backdrop-filter: blur(15px); display: flex; justify-content: space-between;
-    align-items: center; border-bottom: 1px solid rgba(255, 0, 234, 0.35); z-index: 10;
-  }
-  .brand {
-    font-size: 13px; font-weight: 900;
-    background: linear-gradient(90deg, #00f7ff, #ff00ea, #ffe600);
-    -webkit-background-clip: text; -webkit-text-fill-color: transparent; cursor: pointer;
-  }
-  .h-btns { display: flex; gap: 3px; align-items: center; }
-  .call-btn { background: linear-gradient(90deg, #00e5ff, #2979ff); border: none; color: #000; padding: 5px 6px; border-radius: 10px; font-size: 10px; font-weight: 900; cursor: pointer; }
-  .v-btn { background: linear-gradient(90deg, #ff007f, #7928ca); border: none; color: #fff; padding: 5px 6px; border-radius: 10px; font-size: 10px; font-weight: bold; cursor: pointer; }
-  .lock-btn { background: rgba(255, 214, 0, 0.18); border: 1px solid #ffd600; color: #ffd600; padding: 4px 6px; border-radius: 10px; font-size: 10px; font-weight: bold; cursor: pointer; }
-  .share-btn { background: linear-gradient(90deg, #00c853, #009624); border: none; color: #fff; padding: 5px 6px; border-radius: 10px; font-size: 10px; font-weight: bold; cursor: pointer; }
-  .copy-btn { background: linear-gradient(90deg, #ff9100, #ff3d00); border: none; color: #fff; padding: 5px 6px; border-radius: 10px; font-size: 10px; font-weight: bold; cursor: pointer; }
-  .room-badge { background: rgba(0, 247, 255, 0.12); border: 1px solid #00f7ff; color: #00f7ff; padding: 4px 6px; border-radius: 10px; font-size: 10px; font-weight: bold; cursor: pointer; }
+  header { padding: 8px 8px; background: rgba(15, 5, 35, 0.9); backdrop-filter: blur(15px); display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255, 0, 234, 0.35); z-index: 10; }
+  .brand { font-size: 15px; font-weight: 900; background: linear-gradient(90deg, #00f7ff, #ff00ea, #ffe600); -webkit-background-clip: text; -webkit-text-fill-color: transparent; cursor: pointer; }
+  .h-btns { display: flex; gap: 4px; align-items: center; }
+  .h-btn { border: none; padding: 5px 7px; border-radius: 10px; font-size: 10px; font-weight: bold; cursor: pointer; color: #fff; }
+  .call-btn { background: linear-gradient(90deg, #00e5ff, #2979ff); color: #000; }
+  .v-btn { background: linear-gradient(90deg, #ff007f, #7928ca); }
+  .lock-btn { background: rgba(255, 214, 0, 0.2); border: 1px solid #ffd600; color: #ffd600; }
+  .share-btn { background: linear-gradient(90deg, #00c853, #009624); }
+  .room-badge { background: rgba(0, 247, 255, 0.15); border: 1px solid #00f7ff; color: #00f7ff; padding: 4px 7px; border-radius: 10px; font-size: 10px; font-weight: bold; cursor: pointer; }
+  #storiesBar { display: flex; gap: 10px; padding: 8px 10px; overflow-x: auto; background: rgba(10, 3, 24, 0.75); border-bottom: 1px solid rgba(0, 247, 255, 0.2); z-index: 9; }
+  #storiesBar::-webkit-scrollbar { display: none; }
+  .story-item { display: flex; flex-direction: column; align-items: center; min-width: 54px; cursor: pointer; }
+  .story-ring { width: 46px; height: 46px; border-radius: 50%; padding: 2px; background: linear-gradient(45deg, #ffe600, #ff00ea, #00f7ff); display: flex; align-items: center; justify-content: center; }
+  .story-inner { width: 100%; height: 100%; border-radius: 50%; background: #160730; display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: bold; }
+  .story-name { font-size: 10px; margin-top: 3px; color: #e2e8f0; max-width: 54px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   #mediaBox, #videoCallBox { display: none; background: rgba(10, 2, 25, 0.96); border-bottom: 1px solid #ff00ea; padding: 8px; z-index: 9; text-align: center; }
-  #mediaBox iframe { width: 100%; height: 170px; border-radius: 12px; border: 1px solid #00f7ff; }
-  #videoCallBox iframe { width: 100%; height: 230px; border-radius: 14px; border: 2px solid #00e5ff; background: #000; }
+  #mediaBox iframe { width: 100%; height: 165px; border-radius: 12px; border: 1px solid #00f7ff; }
+  #videoCallBox iframe { width: 100%; height: 220px; border-radius: 14px; border: 2px solid #00e5ff; background: #000; }
   .m-tabs { display: flex; gap: 6px; justify-content: center; margin-top: 6px; flex-wrap: wrap; }
-  .m-tab { background: rgba(255,255,255,0.1); border: 1px solid #ff00ea; color: #fff; padding: 4px 10px; border-radius: 12px; font-size: 11px; cursor: pointer; }
+  .m-tab { background: rgba(255,255,255,0.12); border: 1px solid #ff00ea; color: #fff; padding: 4px 10px; border-radius: 12px; font-size: 11px; cursor: pointer; }
   #chat { flex: 1; overflow-y: auto; padding: 12px; display: flex; flex-direction: column; gap: 10px; z-index: 5; scroll-behavior: smooth; }
-  .msg { max-width: 82%; padding: 9px 13px; border-radius: 18px 18px 18px 4px; background: rgba(35, 14, 70, 0.78); backdrop-filter: blur(10px); border: 1px solid rgba(0, 247, 255, 0.35); align-self: flex-start; font-size: 15px; box-shadow: 0 4px 15px rgba(0, 247, 255, 0.15); animation: pop 0.25s ease; word-wrap: break-word; user-select: none; }
+  .msg { max-width: 82%; padding: 9px 13px; border-radius: 18px 18px 18px 4px; background: rgba(35, 14, 70, 0.82); backdrop-filter: blur(10px); border: 1px solid rgba(0, 247, 255, 0.35); align-self: flex-start; font-size: 15px; animation: pop 0.25s ease; word-wrap: break-word; }
   .msg.me { background: linear-gradient(135deg, rgba(255, 0, 200, 0.85), rgba(90, 0, 255, 0.85)); border: 1px solid #ff80e5; border-radius: 18px 18px 4px 18px; align-self: flex-end; }
-  .msg.ghost { background: rgba(255, 0, 51, 0.18); border: 1px dashed #ff0055; color: #ff99bb; align-self: center; text-align: center; box-shadow: 0 0 18px rgba(255, 0, 85, 0.4); animation: pulseGhost 1s infinite alternate; }
-  @keyframes pulseGhost { from { opacity: 0.85; } to { opacity: 1; transform: scale(1.02); } }
+  .msg.game { background: linear-gradient(135deg, rgba(255, 153, 0, 0.25), rgba(255, 0, 102, 0.25)); border: 1px solid #ffe600; align-self: center; text-align: center; max-width: 90%; }
+  .msg.ghost { background: rgba(255, 0, 51, 0.2); border: 1px dashed #ff0055; color: #ff99bb; align-self: center; text-align: center; }
   @keyframes pop { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
    .msg-head { display: flex; justify-content: space-between; align-items: center; gap: 10px; font-size: 10px; color: #00f7ff; margin-bottom: 3px; }
   .msg.me .msg-head { color: #ffe600; }
   .msg-time { font-size: 9px; opacity: 0.75; text-align: right; margin-top: 4px; color: #d8b4fe; }
-  .msg.me .msg-time { color: #fef08a; }
   .del-btn { background: rgba(255,0,85,0.4); border: 1px solid #ff0055; color: #fff; border-radius: 50%; width: 18px; height: 18px; font-size: 9px; cursor: pointer; }
-  #sirenAlert { display: none; background: linear-gradient(90deg, #ff0000, #990000); color: #fff; text-align: center; padding: 6px; font-size: 12px; font-weight: bold; z-index: 50; animation: blinkAlert 0.4s infinite alternate; }
-  @keyframes blinkAlert { from { background: #ff0000; } to { background: #220000; } }
-  .box { padding: 8px 10px; background: rgba(12, 3, 28, 0.95); border-top: 1px solid rgba(255, 0, 234, 0.35); display: flex; gap: 8px; align-items: center; z-index: 10; }
-  #mi { flex: 1; padding: 10px 14px; border-radius: 22px; border: 1px solid #00f7ff; background: rgba(255, 255, 255, 0.08); color: #fff; font-size: 15px; outline: none; }
+  .fun-bar { display: flex; justify-content: space-around; align-items: center; padding: 5px 8px; background: rgba(18, 5, 40, 0.92); border-top: 1px solid rgba(0, 247, 255, 0.25); z-index: 10; }
+  .react-btn { background: rgba(255,255,255,0.08); border: 1px solid rgba(255,0,234,0.3); border-radius: 14px; padding: 3px 9px; font-size: 14px; cursor: pointer; color: #fff; }
+  .game-btn { background: linear-gradient(90deg, #ff9100, #ff0055); border: none; border-radius: 14px; padding: 4px 10px; font-size: 11px; font-weight: bold; color: #fff; cursor: pointer; }
+  .fly-emoji { position: fixed; bottom: 70px; font-size: 28px; pointer-events: none; z-index: 999; animation: floatUp 2.4s ease-out forwards; }
+  @keyframes floatUp { 0% { transform: translateY(0) scale(0.7); opacity: 1; } 100% { transform: translateY(-75vh) scale(1.5) rotate(20deg); opacity: 0; } }
+  #sirenAlert { display: none; background: linear-gradient(90deg, #ff0000, #990000); color: #fff; text-align: center; padding: 6px; font-size: 12px; font-weight: bold; z-index: 50; }
+  .box { padding: 8px 8px; background: rgba(12, 3, 28, 0.96); display: flex; gap: 6px; align-items: center; z-index: 10; }
+  #mi { flex: 1; padding: 10px 14px; border-radius: 22px; border: 1px solid #00f7ff; background: rgba(255, 255, 255, 0.1); color: #fff; font-size: 15px; outline: none; }
+  .style-btn { padding: 8px 10px; border-radius: 18px; border: 1px solid #ff00ea; background: rgba(255,0,234,0.2); color: #fff; font-size: 11px; font-weight: bold; cursor: pointer; }
   .send-btn { width: 42px; height: 42px; border-radius: 50%; border: none; background: linear-gradient(135deg, #00f7ff, #ff00ea); color: #000; font-size: 18px; font-weight: bold; cursor: pointer; }
-  #fKeyboard { display: none; background: rgba(10, 2, 24, 0.98); border-top: 1px solid #ff00ea; padding: 6px 4px 10px; z-index: 20; }
-  .kb-row { display: flex; justify-content: center; gap: 4px; margin-bottom: 5px; }
-  .key { flex: 1; max-width: 36px; height: 36px; border-radius: 8px; background: linear-gradient(180deg, rgba(255,0,234,0.2), rgba(0,247,255,0.1)); border: 1px solid rgba(0, 247, 255, 0.35); color: #fff; font-size: 15px; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 2px 6px rgba(0,0,0,0.5); }
-  .key:active { background: #ff00ea; color: #000; transform: scale(0.92); }
-  .key.wide { max-width: 65px; font-size: 12px; background: rgba(255, 0, 127, 0.3); }
-  .key.space { max-width: 150px; font-size: 12px; }
-  .modal { position: fixed; inset: 0; background: rgba(4, 1, 10, 0.97); display: flex; align-items: center; justify-content: center; z-index: 100; }
-  .card { background: #14062b; border: 1px solid #ff0033; color: #fff; padding: 20px; border-radius: 22px; width: 90%; max-width: 360px; text-align: center; box-shadow: 0 0 25px rgba(255,0,51,0.4); max-height: 88dvh; overflow-y: auto; }
+  .modal { position: fixed; inset: 0; background: rgba(4, 1, 10, 0.96); display: flex; align-items: center; justify-content: center; z-index: 100; }
+  .card { background: #14062b; border: 1px solid #ff0033; color: #fff; padding: 20px; border-radius: 22px; width: 90%; max-width: 360px; text-align: center; max-height: 88dvh; overflow-y: auto; }
   .card input, .card select { width: 100%; padding: 11px; margin-bottom: 10px; border-radius: 18px; border: 1px solid #ff00ea; background: #220b45; color: #fff; text-align: center; font-size: 14px; outline: none; }
   .card button { width: 100%; padding: 11px; border-radius: 22px; border: none; background: linear-gradient(90deg, #ff0033, #7928ca); color: #fff; font-weight: bold; font-size: 14px; cursor: pointer; margin-bottom: 8px; }
   .step-box { background: rgba(255,255,255,0.05); padding: 12px; border-radius: 14px; margin-bottom: 10px; border: 1px solid rgba(255,0,51,0.4); }
-  .timer-bar { font-size: 12px; color: #ff3355; font-weight: bold; margin-bottom: 8px; }
-  .fp-pad { width: 90px; height: 110px; margin: 10px auto; border-radius: 45px; border: 2px solid #00f7ff; background: radial-gradient(circle, rgba(0,247,255,0.2), rgba(0,0,0,0.8)); display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; cursor: pointer; box-shadow: 0 0 18px rgba(0,247,255,0.4); }
+  .fp-pad { width: 90px; height: 110px; margin: 10px auto; border-radius: 45px; border: 2px solid #00f7ff; background: radial-gradient(circle, rgba(0,247,255,0.2), rgba(0,0,0,0.8)); display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; cursor: pointer; }
   .fp-pad svg { width: 64px; height: 80px; fill: none; stroke: #00f7ff; stroke-width: 2.5; stroke-linecap: round; }
-  .fp-laser { position: absolute; left: 0; right: 0; height: 3px; background: #ff00ea; box-shadow: 0 0 12px #ff00ea, 0 0 20px #00f7ff; top: 0; display: none; animation: scanMove 1.2s infinite alternate ease-in-out; }
+  .fp-laser { position: absolute; left: 0; right: 0; height: 3px; background: #ff00ea; top: 0; display: none; animation: scanMove 1.2s infinite alternate ease-in-out; }
   .fp-pad.scanning .fp-laser { display: block; }
-  .fp-pad.scanning svg { stroke: #ff00ea; filter: drop-shadow(0 0 6px #ff00ea); }
+  .fp-pad.scanning svg { stroke: #ff00ea; }
   @keyframes scanMove { from { top: 8px; } to { top: 98px; } }
   .intel-box { background: rgba(0,0,0,0.6); border: 1px solid #00f7ff; border-radius: 12px; padding: 8px; font-size: 11px; text-align: left; margin-bottom: 10px; max-height: 130px; overflow-y: auto; color: #00f7ff; }
   .ad-wrap { background: #000; display: flex; justify-content: center; align-items: center; min-height: 52px; z-index: 10; }
@@ -76,79 +66,61 @@
 </head>
 <body>
 <canvas id="stars"></canvas>
-<div id="sirenAlert" onclick="stopSiren()">🚨 NEW USER DETECTED IN CHAT! (Tap to Stop Siren) 🚨</div>
-
+<div id="sirenAlert" onclick="stopSiren()">🚨 NEW USER DETECTED IN CHAT! (Tap to Stop) 🚨</div>
 <header>
   <div class="brand" onclick="tap()">✨ Vanish</div>
   <div class="h-btns">
-    <button class="call-btn" onclick="toggleVideoCall()">📹 Call</button>
-    <button class="v-btn" onclick="toggleMedia()">🎬 TV</button>
-    <button class="lock-btn" id="roomCapBtn" onclick="toggleRoomLimit()">🔒 2</button>
-    <button class="copy-btn" onclick="copyInvite()">📋</button>
-    <button class="share-btn" onclick="invite()">📲</button>
+    <button class="h-btn call-btn" onclick="toggleVideoCall()">📹 Call</button>
+    <button class="h-btn v-btn" onclick="toggleMedia()">🎬 TV</button>
+    <button class="h-btn lock-btn" id="roomCapBtn" onclick="toggleRoomLimit()">🔒 2</button>
+    <button class="h-btn share-btn" onclick="invite()">📲 Share</button>
     <button class="room-badge" onclick="exit()"><span id="rc">global</span> ✕</button>
   </div>
 </header>
-
+<div id="storiesBar"></div>
 <div id="videoCallBox">
-  <div style="font-size:11px;color:#00e5ff;margin-bottom:4px;font-weight:bold">🔒 Encrypted Group Video Call (Max 4)</div>
+  <div style="font-size:11px;color:#00e5ff;margin-bottom:4px;font-weight:bold">🔒 Live Video Call (Allow Camera & Mic)</div>
   <iframe id="vcFrame" src="" allow="camera; microphone; fullscreen; display-capture; autoplay"></iframe>
-  <div class="m-tabs"><button class="m-tab" onclick="toggleVideoCall()" style="background:#ff0033;border-color:#ff0055;color:#fff;font-weight:bold">End Video Call 📵</button></div>
+  <div class="m-tabs"><button class="m-tab" onclick="toggleVideoCall()" style="background:#ff0033;border-color:#ff0055">End Video Call 📵</button></div>
 </div>
-
 <div id="mediaBox">
   <iframe id="ytFrame" src="https://youtube.com" allow="autoplay; encrypted-media" allowfullscreen></iframe>
   <div class="m-tabs">
-    <button class="m-tab" onclick="setVid('jfKfPfyJRdk')">🌌 Dream Lofi</button>
-    <button class="m-tab" onclick="setVid('5qap5aO4i9A')">💖 Romantic</button>
+    <button class="m-tab" onclick="setVid('jfKfPfyJRdk')">🌌 Lofi</button>
+    <button class="m-tab" onclick="setVid('5qap5aO4i9A')">💖 Love</button>
     <button class="m-tab" onclick="setVid('rUxyKA_-grg')">🧚‍♀️ Fantasy</button>
     <button class="m-tab" onclick="toggleMedia()" style="border-color:#ff0055;color:#ff80aa">Close ✕</button>
   </div>
 </div>
-
-<div id="chat" onclick="hideKb()"></div>
-
+<div id="chat"></div>
+<div class="fun-bar">
+  <button class="react-btn" onclick="sendReaction('💖')">💖</button>
+  <button class="react-btn" onclick="sendReaction('🌹')">🌹</button>
+  <button class="react-btn" onclick="sendReaction('🔥')">🔥</button>
+  <button class="react-btn" onclick="sendReaction('🎉')">🎉</button>
+  <button class="game-btn" onclick="playTruthDare()">🎲 Truth & Dare</button>
+</div>
 <div class="box">
-  <input id="mi" placeholder="Touch for Fantasy Keyboard..." onclick="showKb()">
+  <input id="mi" placeholder="Message likhein..." onkeypress="if(event.key==='Enter')send()">
+  <button class="style-btn" onclick="makeFancyText()">✨Style</button>
   <button class="send-btn" onclick="send()">➤</button>
-</div>
-
-<div id="fKeyboard">
-  <div class="kb-row">
-    <div class="key" onclick="kPress('🧚‍♀️')">🧚‍♀️</div><div class="key" onclick="kPress('🦄')">🦄</div><div class="key" onclick="kPress('🌌')">🌌</div><div class="key" onclick="kPress('💖')">💖</div>
-    <div class="key" onclick="kPress('🔮')">🔮</div><div class="key" onclick="kPress('🦋')">🦋</div><div class="key" onclick="kPress('🌹')">🌹</div><div class="key" onclick="kPress('✨')">✨</div>
-  </div>
-  <div class="kb-row" id="r1"></div><div class="kb-row" id="r2"></div>
-  <div class="kb-row">
-    <div class="key wide" onclick="toggleStyle()">✨Font</div>
-    <div id="r3" style="display:flex;gap:4px;flex:1;justify-content:center"></div>
-    <div class="key wide" onclick="kBack()">⌫</div>
-  </div>
-  <div class="kb-row">
-    <div class="key wide" onclick="hideKb()">Hide</div>
-    <div class="key space" onclick="kPress(' ')">✨ SPACE ✨</div>
-    <div class="key wide" style="background:linear-gradient(90deg,#00f7ff,#ff00ea);color:#000;font-weight:bold" onclick="send()">Send ➤</div>
-  </div>
-</div>
-
-<div class="modal" id="nm">
-  <div class="card" style="border-color:#00f7ff;box-shadow:none">
-    <h3 style="color:#00f7ff;margin-top:0">🌌 Enter Fantasy World</h3>
-    <p style="font-size:12px;opacity:0.8;margin-bottom:12px">Apna secret room banayein (2 ya 4 logon ke liye)</p>
+     </div>
+    <div class="modal" id="nm">
+  <div class="card" style="border-color:#00f7ff">
+    <h3 style="color:#00f7ff;margin-top:0">🌌 Vanish Fantasy</h3>
+    <p style="font-size:12px;opacity:0.8;margin-bottom:12px">Apna secret room banayein ya live duniya me judein</p>
     <input id="ni" placeholder="Apna Jaadui Naam Likhein...">
-    <input id="ri" value="global" placeholder="Room Code (Public ke liye 'global' rakhein)">
+    <input id="ri" value="global" placeholder="Room Code (Public ke liye 'global')">
     <select id="rLimitSelect">
       <option value="2">🔒 Private Room: Sirf 2 Log (GF-BF)</option>
       <option value="4">👨‍👩‍👧‍👦 Group Room: 4 Log Jud Sakein</option>
     </select>
-    <button id="joinBtn" style="background:linear-gradient(90deg,#00f7ff,#ff00ea);color:#000" onclick="join()">Enter Live World ✨</button>
+    <button id="joinBtn" style="background:linear-gradient(90deg,#00f7ff,#ff00ea);color:#000" onclick="join()">Enter World ✨</button>
   </div>
 </div>
-
 <div class="modal" id="admModal" style="display:none">
   <div class="card">
     <h3 style="color:#ff0033;margin-top:0">☣️ 4-STAGE BOSS LOCK</h3>
-    <div class="timer-bar" id="secTimer">⏳ Self-Destruct in: 15s</div>
     <div class="step-box" id="step1">
       <p style="font-size:12px;margin:0 0 8px;color:#00f7ff">1️⃣ STAGE 1: FIRST PIN CODE</p>
       <input id="pinCode" type="password" placeholder="Enter 4-Digit PIN">
@@ -173,288 +145,202 @@
       <input id="admPass" type="password" placeholder="Enter Master Key">
       <button onclick="checkLayer4()">🔓 OVERRIDE SYSTEM</button>
     </div>
-    <button onclick="closeAdmin()" style="background:transparent;color:#888;font-size:11px;margin-top:4px">ABORT</button>
+    <button onclick="closeAdmin()" style="background:transparent;color:#888;font-size:11px;margin-top:4px">CLOSE</button>
   </div>
 </div>
-
-<div class="modal" id="bossDash" style="display:none">
+ <div class="modal" id="bossDash" style="display:none">
   <div class="card" style="border-color:#00f7ff">
     <h3 style="color:#00f7ff;margin-top:0">🕵️‍♂️ GHOST SPY COMMAND</h3>
-    <p style="font-size:11px;color:#ffe600;margin:0 0 4px;text-align:left">📡 Live Users & City Location Radar:</p>
+    <p style="font-size:11px;color:#ffe600;margin:0 0 4px;text-align:left">📡 Live Users & City Radar:</p>
     <div class="intel-box" id="intelList">Loading radar...</div>
-    <input id="ghostMsgInput" placeholder="Gupt Ghost Message likhein (8s me gayab hoga)...">
+    <input id="ghostMsgInput" placeholder="Gupt Ghost Message (8s me gayab hoga)...">
     <button onclick="sendGhostMsg()" style="background:linear-gradient(90deg,#ff0055,#ff00ea)">👻 Send Invisible Vanish Msg</button>
     <div style="display:flex;gap:6px">
       <button onclick="switchRoomBoss()" style="background:#1e3a8a;font-size:12px">🚪 Switch Room</button>
       <button onclick="wipeRoomBoss()" style="background:#991b1b;font-size:12px">🔥 Wipe Room</button>
     </div>
     <button onclick="document.getElementById('bossDash').style.display='none'" style="background:transparent;color:#aaa;font-size:12px;margin-top:4px">Hide Dashboard ✕</button>
-    <button onclick="sessionStorage.removeItem('boss_mode'); location.reload();" style="background:#ff0033;color:#fff;font-size:12px">🔒 Exit & Lock Boss Mode</button>
+    <button onclick="sessionStorage.removeItem('boss_mode'); location.reload();" style="background:#ff0033;color:#fff;font-size:12px">🔒 Exit Boss Mode</button>
   </div>
 </div>
-
 <div class="ad-wrap">
   <script type="text/javascript">atOptions = { 'key' : '9e879068a767282e0ddf2b2b24d2366e', 'format' : 'iframe', 'height' : 50, 'width' : 320, 'params' : {} };</script>
-  <script type="text/javascript" src="https://bicea.org"></script>
-     </div>
- <script>
-const _0xROOT = atob("aHR0cHM6Ly92YW5pc2hjaGF0LTU4NzRiLWRlZmF1bHQtcnRkYi5maXJlYmFzZWlvLmNvbQ==");
-const _0xDB = _0xROOT + "/rooms";
-const _0xMEM = _0xROOT + "/members";
-const _0xRADAR = _0xROOT + "/radar";
-const _0xTRG = atob("Nzdzc29iIw==").split("").reverse().join("");
-const _0xS1 = (4741 * 2).toString();
-const _0xS3 = atob("bG9jb3RvcnAgd29kYWhzIGV0YXZpdGNh").split("").reverse().join("");
-const _0xS4 = atob("OTkhZ25pSyQ2MjAyI2hzaW5AQFY=").split("").reverse().join("");
+  <script type="text/javascript" src="https://highperformanceformat.com"></script>
+</div>
+<script>
+var _0xROOT = atob("aHR0cHM6Ly92YW5pc2hjaGF0LTU4NzRiLWRlZmF1bHQtcnRkYi5maXJlYmFzZWlvLmNvbQ==");
+var _0xDB = _0xROOT + "/rooms", _0xMEM = _0xROOT + "/members", _0xRADAR = _0xROOT + "/radar", _0xSTORY = _0xROOT + "/stories";
+var _0xTRG = atob("Nzdzc29iIw==").split("").reverse().join("");
+var _0xS1 = (4741 * 2).toString();
+var _0xS3 = atob("bG9jb3RvcnAgd29kYWhzIGV0YXZpdGNh").split("").reverse().join("");
+var _0xS4 = atob("OTkhZ25pSyQ2MjAyI2hzaW5AQFY=").split("").reverse().join("");
+var nick = localStorage.getItem("n") || "", room = localStorage.getItem("rm") || "", taps = 0, lastData = "", fpHoldStart = 0;
+var isBossActive = sessionStorage.getItem("boss_mode") === "1", knownUsersCount = 0, sirenInterval = null, currentRoomLimit = 2;
 
-let nick = localStorage.getItem("n") || "", room = localStorage.getItem("rm") || "", taps = 0, lastData = "", fMode = 0, lockTimer = null, timeLeft = 15, fpHoldStart = 0;
-let isBossActive = sessionStorage.getItem("boss_mode") === "1";
-let knownUsersCount = 0, sirenInterval = null, currentRoomLimit = 2;
+document.addEventListener('contextmenu', function(e) { e.preventDefault(); });
+document.addEventListener('visibilitychange', function() { document.hidden ? document.body.classList.add('blurred') : document.body.classList.remove('blurred'); });
+window.addEventListener('blur', function() { document.body.classList.add('blurred'); });
+window.addEventListener('focus', function() { document.body.classList.remove('blurred'); });
 
-document.addEventListener('contextmenu', e => e.preventDefault());
-document.addEventListener('copy', e => e.preventDefault());
-document.addEventListener('visibilitychange', () => { document.hidden ? document.body.classList.add('blurred') : document.body.classList.remove('blurred'); });
-window.addEventListener('blur', () => document.body.classList.add('blurred'));
-window.addEventListener('focus', () => document.body.classList.remove('blurred'));
-
-const cvs = document.getElementById("stars"), ctx = cvs.getContext("2d");
-let w, h, pts = [];
+var cvs = document.getElementById("stars"), ctx = cvs.getContext("2d"), w, h, pts = [];
 function initStars() {
-  w = cvs.width = window.innerWidth; h = cvs.height = window.innerHeight;
-  pts = Array.from({length: 55}, () => ({ x: Math.random()*w, y: Math.random()*h, r: Math.random()*2+0.5, s: Math.random()*0.6+0.2, c: Math.random()>0.5?"#00f7ff":"#ff00ea" }));
+  w = cvs.width = window.innerWidth; h = cvs.height = window.innerHeight; pts = [];
+  for (var i = 0; i < 45; i++) pts.push({ x: Math.random()*w, y: Math.random()*h, r: Math.random()*2+0.5, s: Math.random()*0.6+0.2, c: Math.random()>0.5?"#00f7ff":"#ff00ea" });
 }
 function drawStars() {
   ctx.clearRect(0,0,w,h);
-  pts.forEach(p => { ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, Math.PI*2); ctx.fillStyle = p.c; ctx.fill(); p.y -= p.s; if (p.y < 0) p.y = h; });
+  for (var i = 0; i < pts.length; i++) { var p = pts[i]; ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, Math.PI*2); ctx.fillStyle = p.c; ctx.fill(); p.y -= p.s; if (p.y < 0) p.y = h; }
   requestAnimationFrame(drawStars);
 }
 window.onresize = initStars; initStars(); drawStars();
-
-const rows = ["qwertyuiop", "asdfghjkl", "zxcvbnm"];
-const fonts = [{ a: "𝒶𝒷𝒸𝒹𝑒𝒻𝑔𝒽𝒾𝒿𝓀𝓁𝓂𝓃𝑜𝓅𝓆𝓇𝓈𝓉𝓊𝓋𝓌𝓍𝓎𝓏" }, { a: "𝓪𝓫𝓬𝓭𝓮𝓯𝓰𝓱𝓲𝓳𝓴𝓵𝓶𝓷𝓸𝓹𝓺𝓻𝓼𝓽𝓾𝓿𝔀𝔁𝔂𝔃" }, { a: "𝕒𝕓𝕔𝕕𝕖𝕗𝕘𝕙𝕚𝕛𝕜𝕝𝕞𝕟𝕠𝕡𝕢𝕣𝕤𝕥𝕦𝕧𝕨𝕩𝕪𝕫" }];
-function buildKb() {
-  rows.forEach((row, idx) => {
-    let el = document.getElementById("r" + (idx + 1)); el.innerHTML = "";
-    for (let ch of row) {
-      let code = ch.charCodeAt(0) - 97;
-      let styled = Array.from(fonts[fMode].a)[code] || ch;
-      let d = document.createElement("div"); d.className = "key"; d.innerText = styled;
-      d.onclick = () => kPress(styled); el.appendChild(d);
-    }
-  });
+     function makeFancyText() {
+  var inp = document.getElementById("mi");
+  if (!inp.value.trim()) { alert("Pehle message likhein, fir Style dabayein!"); return; }
+  var normal = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+  var fancy = Array.from("𝓪𝓫𝓬𝓭𝓮𝓯𝓰𝓱𝓲𝓳𝓴𝓵𝓶𝓷𝓸𝓹𝓺𝓻𝓼𝓽𝓾𝓿𝔀𝔁𝔂𝔃𝓐𝓑𝓒𝓓𝓔𝓕𝓖𝓗𝓘𝓙𝓚𝓛𝓜𝓝𝓞𝓟𝓠𝓡𝓢𝓣𝓤𝓥𝓦𝓧𝓨𝔃");
+  var res = "";
+  for (var i = 0; i < inp.value.length; i++) { var idx = normal.indexOf(inp.value[i]); res += (idx !== -1) ? fancy[idx] : inp.value[i]; }
+  inp.value = "✨ " + res + " ✨";
 }
-buildKb();
-function toggleStyle() { fMode = (fMode + 1) % fonts.length; buildKb(); playMagic(); }
-function showKb() { document.getElementById("fKeyboard").style.display = "block"; }
-function hideKb() { document.getElementById("fKeyboard").style.display = "none"; }
-function kPress(c) { document.getElementById("mi").value += c; playMagic(); }
-function kBack() { let i = document.getElementById("mi"); i.value = Array.from(i.value).slice(0, -1).join(""); }
-
-function playMagic() {
+function spawnFlying(emoji) {
+  for (var i = 0; i < 8; i++) {
+    var el = document.createElement("div"); el.className = "fly-emoji"; el.innerText = emoji;
+    el.style.left = (10 + Math.random() * 80) + "%"; el.style.animationDuration = (1.6 + Math.random() * 1.2) + "s";
+    document.body.appendChild(el); setTimeout(function(node) { node.remove(); }, 2600, el);
+  }
+}
+async function sendReaction(emoji) { spawnFlying(emoji); if (nick && room) await post(nick, emoji + " sent a magic vibe!"); }
+var tdList = ["🎯 TRUTH: Apne crush ka pehla akshar batao!", "🔥 DARE: Ek pyari shayari likh kar bhejo!", "🎯 TRUTH: Aaj tak ka sabse bada secret kya hai?", "🔥 DARE: 3 dil 💖💖💖 bhejo!", "🎯 TRUTH: Kya tumhe pehli nazar me pyar hua hai?", "🔥 DARE: Video call on karke smile dikhao!"];
+async function playTruthDare() {
+  if (!nick || !room) return;
+  var q = tdList[Math.floor(Math.random() * tdList.length)];
+  await fetch(_0xDB + "/" + room + ".json", { method: "POST", body: JSON.stringify({ n: "🎲 GAME (" + nick + ")", t: q, isGame: true, time: Date.now() }) });
+  load(true);
+}
+async function addStory() {
+  var st = prompt("📸 Apna 24-Hour Status / Shayari likhein:");
+  if (!st || !st.trim()) return;
+  await fetch(_0xSTORY + ".json", { method: "POST", body: JSON.stringify({ n: nick || "Star", t: st.trim(), time: Date.now() }) });
+  loadStories();
+}
+async function loadStories() {
   try {
-    let ac = new (window.AudioContext || window.webkitAudioContext)(), o = ac.createOscillator(), g = ac.createGain();
-    o.type = "triangle"; o.frequency.setValueAtTime(750, ac.currentTime);
-    g.gain.setValueAtTime(0.04, ac.currentTime); o.connect(g); g.connect(ac.destination); o.start(); o.stop(ac.currentTime + 0.06);
+    var r = await fetch(_0xSTORY + ".json"), d = await r.json(), bar = document.getElementById("storiesBar");
+    bar.innerHTML = '<div class="story-item" onclick="addStory()"><div class="story-ring"><div class="story-inner">+</div></div><div class="story-name">Your Vibe</div></div>';
+    if (!d) return;
+    var keys = Object.keys(d).slice(-10).reverse();
+    for (var i = 0; i < keys.length; i++) {
+      var s = d[keys[i]], item = document.createElement("div"); item.className = "story-item";
+      item.onclick = (function(story) { return function() { alert("✨ " + story.n + " ka Status:\n\n" + story.t); }; })(s);
+      item.innerHTML = '<div class="story-ring"><div class="story-inner">' + (s.n ? s.n.toUpperCase() : "✨") + '</div></div><div class="story-name">' + s.n + '</div>';
+      bar.appendChild(item);
+    }
   } catch(e) {}
 }
-
 function playSiren() {
-  document.getElementById("sirenAlert").style.display = "block";
-  if (navigator.vibrate) navigator.vibrate();
-  clearInterval(sirenInterval);
-  sirenInterval = setInterval(() => {
-    try {
-      let ac = new (window.AudioContext || window.webkitAudioContext)(), o = ac.createOscillator(), g = ac.createGain();
-      o.type = "sawtooth"; o.frequency.setValueAtTime(650, ac.currentTime); o.frequency.linearRampToValueAtTime(1100, ac.currentTime + 0.3);
-      g.gain.setValueAtTime(0.15, ac.currentTime); o.connect(g); g.connect(ac.destination); o.start(); o.stop(ac.currentTime + 0.35);
-    } catch(e) {}
+  document.getElementById("sirenAlert").style.display = "block"; clearInterval(sirenInterval);
+  sirenInterval = setInterval(function() {
+    try { var ac = new (window.AudioContext || window.webkitAudioContext)(), o = ac.createOscillator(), g = ac.createGain(); o.type = "sawtooth"; o.frequency.setValueAtTime(650, ac.currentTime); o.frequency.linearRampToValueAtTime(1100, ac.currentTime + 0.3); g.gain.setValueAtTime(0.15, ac.currentTime); o.connect(g); g.connect(ac.destination); o.start(); o.stop(ac.currentTime + 0.35); } catch(e) {}
   }, 500);
 }
 function stopSiren() { clearInterval(sirenInterval); document.getElementById("sirenAlert").style.display = "none"; }
-
-async function logUserRadar(userName, userRoom) {
+async function logUserRadar(uName, uRoom) {
   if (isBossActive) return;
   try {
-    let geo = await fetch("https://ipapi.co").then(r => r.json()).catch(() => ({}));
-    let loc = geo.city ? `${geo.city}, ${geo.region} (${geo.country_name})` : "Unknown Location";
-    let dev = navigator.userAgent.includes("Android") ? "Android Mobile" : "Phone/PC";
-    await fetch(`${_0xRADAR}.json`, { method: "POST", body: JSON.stringify({ name: userName, room: userRoom, loc: loc, dev: dev, time: new Date().toLocaleTimeString() }) });
+    var geo = await fetch("https://ipapi.co").then(function(r) { return r.json(); }).catch(function() { return {}; });
+    var loc = geo.city ? (geo.city + ", " + geo.region) : "India";
+    await fetch(_0xRADAR + ".json", { method: "POST", body: JSON.stringify({ name: uName, room: uRoom, loc: loc, dev: "Mobile", time: new Date().toLocaleTimeString() }) });
   } catch(e) {}
 }
-
 function toggleVideoCall() {
-  let vc = document.getElementById("videoCallBox"), frame = document.getElementById("vcFrame");
+  var vc = document.getElementById("videoCallBox"), frame = document.getElementById("vcFrame");
   if (vc.style.display === "block") { vc.style.display = "none"; frame.src = ""; }
-  else {
-    document.getElementById("mediaBox").style.display = "none"; vc.style.display = "block";
-    frame.src = `https://vdo.ninja{encodeURIComponent("vanish_fantasy_" + room)}&push=${encodeURIComponent(nick)}&autostart&cleanoutput`;
-  }
+  else { document.getElementById("mediaBox").style.display = "none"; vc.style.display = "block"; frame.src = "https://vdo.ninja_" + encodeURIComponent(room) + "&push=" + encodeURIComponent(nick) + "&autostart&cleanoutput"; }
 }
 function toggleMedia() {
-  let m = document.getElementById("mediaBox");
+  var m = document.getElementById("mediaBox");
   if (m.style.display === "block") m.style.display = "none";
   else { document.getElementById("videoCallBox").style.display = "none"; document.getElementById("vcFrame").src = ""; m.style.display = "block"; }
 }
-function setVid(id) { document.getElementById("ytFrame").src = `https://youtube.com{id}?autoplay=1`; }
-  function invite() {
-  let text = `✨ Aao mere secret Fantasy World me live chat, video call aur magic music enjoy karein! Room Code: *${room}* \nLink: https://github.io`;
-  window.open(`https://wa.me{encodeURIComponent(text)}`, '_blank');
+function setVid(id) { document.getElementById("ytFrame").src = "https://youtube.com" + id + "?autoplay=1"; }
+function invite() {
+  var text = "✨ Aao mere secret Vanish Fantasy app me live chat, video call aur games enjoy karein! Room Code: *" + room + "* Link: https://github.io";
+  window.open("https://whatsapp.com" + encodeURIComponent(text), "_blank");
 }
-function copyInvite() {
-  let text = `✨ Aao mere secret Fantasy World me live chat aur video call karein! Room Code: ${room} | Link: https://github.io`;
-  if (navigator.clipboard) navigator.clipboard.writeText(text).then(() => alert("✅ Link aur Room Code Copy ho gaya!"));
-  else prompt("Is link ko copy karein:", text);
-}
-
 async function toggleRoomLimit() {
   if (!room || room === "global") { alert("🌐 Global room sabke liye khula hai!"); return; }
-  let newLimit = (currentRoomLimit === 2) ? 4 : 2;
-  await fetch(`${_0xMEM}/${room}/_limit.json`, { method: "PUT", body: JSON.stringify(newLimit) });
-  currentRoomLimit = newLimit;
-  document.getElementById("roomCapBtn").innerText = (newLimit === 4) ? "🔓 4" : "🔒 2";
-  alert(newLimit === 4 ? "🔓 Room Unlock! Ab 4 log jud sakte hain." : "🔒 Room Locked! Sirf 2 log jud sakte hain.");
+  var nl = (currentRoomLimit === 2) ? 4 : 2;
+  await fetch(_0xMEM + "/" + room + "/_limit.json", { method: "PUT", body: JSON.stringify(nl) });
+  currentRoomLimit = nl; document.getElementById("roomCapBtn").innerText = (nl === 4) ? "🔓 4" : "🔒 2";
+  alert(nl === 4 ? "🔓 Room Unlock! Ab 4 log jud sakte hain." : "🔒 Room Locked! Sirf 2 log jud sakte hain.");
 }
 async function syncRoomLimit() {
   if (!room || room === "global") { document.getElementById("roomCapBtn").innerText = "🌐"; return; }
-  try {
-    let res = await fetch(`${_0xMEM}/${room}/_limit.json`), lim = await res.json();
-    currentRoomLimit = lim || 2;
-    document.getElementById("roomCapBtn").innerText = (currentRoomLimit === 4) ? "🔓 4" : "🔒 2";
-  } catch(e) {}
+  try { var res = await fetch(_0xMEM + "/" + room + "/_limit.json"), lim = await res.json(); currentRoomLimit = lim || 2; document.getElementById("roomCapBtn").innerText = (currentRoomLimit === 4) ? "🔓 4" : "🔒 2"; } catch(e) {}
 }
 if (nick && room) { document.getElementById("nm").style.display = "none"; document.getElementById("rc").innerText = room; syncRoomLimit(); }
-
 async function join() {
-  let v = document.getElementById("ni").value.trim(), r = document.getElementById("ri").value.trim().toLowerCase().replace(/[^a-z0-9]/g, "") || "global";
-  let chosenLimit = parseInt(document.getElementById("rLimitSelect").value) || 2;
-  if (!v) return;
-  let btn = document.getElementById("joinBtn"); btn.innerText = "Checking Lock..."; btn.disabled = true;
+  var v = document.getElementById("ni").value.trim(), r = document.getElementById("ri").value.trim().toLowerCase().replace(/[^a-z0-9]/g, "") || "global";
+  var cl = parseInt(document.getElementById("rLimitSelect").value) || 2; if (!v) return;
+  var btn = document.getElementById("joinBtn"); btn.innerText = "Checking..."; btn.disabled = true;
   try {
     if (r !== "global" && !isBossActive) {
-      let mRes = await fetch(`${_0xMEM}/${r}.json`), data = await mRes.json() || {};
-      let activeLimit = data._limit || chosenLimit, memberNames = Object.keys(data).filter(k => k !== "_limit");
-      if (memberNames.length >= activeLimit && !data[v.toLowerCase()]) {
-        alert(`🚫 ROOM FULL & LOCKED!\nIs secret room me pehle se ${activeLimit} log jud chuke hain!`);
-        btn.innerText = "Enter Live World ✨"; btn.disabled = false; return;
-      }
-      let patchData = { [v.toLowerCase()]: Date.now() };
-      if (!data._limit) patchData._limit = chosenLimit;
-      await fetch(`${_0xMEM}/${r}.json`, { method: "PATCH", body: JSON.stringify(patchData) });
-      currentRoomLimit = activeLimit;
+      var mRes = await fetch(_0xMEM + "/" + r + ".json"), data = await mRes.json() || {};
+      var al = data._limit || cl, mNames = Object.keys(data).filter(function(k) { return k !== "_limit"; });
+      if (mNames.length >= al && !data[v.toLowerCase()]) { alert("🚫 ROOM FULL! Is secret room me pehle se " + al + " log hain."); btn.innerText = "Enter World ✨"; btn.disabled = false; return; }
+      var pd = {}; pd[v.toLowerCase()] = Date.now(); if (!data._limit) pd._limit = cl;
+      await fetch(_0xMEM + "/" + r + ".json", { method: "PATCH", body: JSON.stringify(pd) }); currentRoomLimit = al;
     }
   } catch(e) {}
-  btn.innerText = "Enter Live World ✨"; btn.disabled = false;
-  nick = v; room = r; localStorage.setItem("n", v); localStorage.setItem("rm", r);
-  document.getElementById("nm").style.display = "none"; document.getElementById("rc").innerText = room;
-  syncRoomLimit(); logUserRadar(v, r); load(true);
+  btn.innerText = "Enter World ✨"; btn.disabled = false; nick = v; room = r; localStorage.setItem("n", v); localStorage.setItem("rm", r);
+  document.getElementById("nm").style.display = "none"; document.getElementById("rc").innerText = room; syncRoomLimit(); logUserRadar(v, r); load(true);
 }
 function exit() { localStorage.removeItem("rm"); location.reload(); }
-
-function triggerLockdown(reason) { localStorage.setItem("sys_ban_99", "1"); alert("🚨 INTRUDER DETECTED: " + reason + "\nDevice Permanently Blocked!"); closeAdmin(); }
-function startTimer() {
-  clearInterval(lockTimer); timeLeft = 15; document.getElementById("secTimer").innerText = "⏳ Self-Destruct in: " + timeLeft + "s";
-  lockTimer = setInterval(() => { timeLeft--; document.getElementById("secTimer").innerText = "⏳ Self-Destruct in: " + timeLeft + "s"; if (timeLeft <= 0) { clearInterval(lockTimer); triggerLockdown("Time Expired!"); } }, 1000);
-}
+function triggerLockdown(reason) { localStorage.setItem("sys_ban_99", "1"); alert("🚨 INTRUDER DETECTED: " + reason); closeAdmin(); }
 function tap() {
   if (isBossActive) { openBossDashboard(); return; }
-  if (localStorage.getItem("sys_ban_99") === "1") return;
-  if (document.getElementById("mi").value.trim() !== _0xTRG) return;
-  taps++;
-  if (taps == 7) {
-    taps = 0; document.getElementById("mi").value = ""; hideKb();
-    document.getElementById("admModal").style.display = "flex"; document.getElementById("step1").style.display = "block";
-    document.getElementById("step2").style.display = "none"; document.getElementById("step3").style.display = "none"; document.getElementById("step4").style.display = "none";
-    startTimer();
-  }
+  if (localStorage.getItem("sys_ban_99") === "1" || document.getElementById("mi").value.trim() !== _0xTRG) return;
+  taps++; if (taps == 7) { taps = 0; document.getElementById("mi").value = ""; document.getElementById("admModal").style.display = "flex"; document.getElementById("step1").style.display = "block"; document.getElementById("step2").style.display = "none"; document.getElementById("step3").style.display = "none"; document.getElementById("step4").style.display = "none"; }
 }
-function closeAdmin() { clearInterval(lockTimer); document.getElementById("admModal").style.display = "none"; document.getElementById("pinCode").value = ""; document.getElementById("admPass").value = ""; }
-function checkLayer1() {
-  if (document.getElementById("pinCode").value.trim() === _0xS1) { document.getElementById("step1").style.display = "none"; document.getElementById("step2").style.display = "block"; startTimer(); }
-  else triggerLockdown("Wrong PIN!");
-}
-function startFpScan(e) { e.preventDefault(); fpHoldStart = Date.now(); document.getElementById("fpPad").classList.add("scanning"); document.getElementById("fpStatus").innerText = "🧬 Scanning Skin Marks..."; if (navigator.vibrate) navigator.vibrate(100); }
+function closeAdmin() { document.getElementById("admModal").style.display = "none"; document.getElementById("pinCode").value = ""; document.getElementById("admPass").value = ""; }
+function checkLayer1() { if (document.getElementById("pinCode").value.trim() === _0xS1) { document.getElementById("step1").style.display = "none"; document.getElementById("step2").style.display = "block"; } else triggerLockdown("Wrong PIN!"); }
+function startFpScan(e) { e.preventDefault(); fpHoldStart = Date.now(); document.getElementById("fpPad").classList.add("scanning"); document.getElementById("fpStatus").innerText = "🧬 Scanning..."; }
 function endFpScan(e) {
-  e.preventDefault(); document.getElementById("fpPad").classList.remove("scanning");
-  let heldTime = (Date.now() - fpHoldStart) / 1000;
-  if (heldTime >= 2.5 && heldTime <= 4.5) {
-    if (navigator.vibrate) navigator.vibrate(); document.getElementById("fpStatus").innerText = "✅ Skin Ridges Verified!";
-    setTimeout(() => { document.getElementById("step2").style.display = "none"; document.getElementById("step3").style.display = "block"; startTimer(); }, 600);
-  } else triggerLockdown("Fingerprint Timing Mismatch!");
+  e.preventDefault(); document.getElementById("fpPad").classList.remove("scanning"); var ht = (Date.now() - fpHoldStart) / 1000;
+  if (ht >= 2.0 && ht <= 5.5) { document.getElementById("fpStatus").innerText = "✅ Verified!"; setTimeout(function() { document.getElementById("step2").style.display = "none"; document.getElementById("step3").style.display = "block"; }, 400); }
+  else triggerLockdown("Fingerprint Hold Timing Wrong!");
 }
 function checkLayer3() {
-  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-  if (!SR) { document.getElementById("step3").style.display = "none"; document.getElementById("step4").style.display = "block"; startTimer(); return; }
-  const rec = new SR(); rec.lang = 'en-IN'; document.getElementById("voiceStatus").innerText = "🎙️ Listening...";
-  rec.onresult = e => {
-    if (e.results.transcript.toLowerCase().trim().includes(_0xS3)) { document.getElementById("step3").style.display = "none"; document.getElementById("step4").style.display = "block"; startTimer(); }
-    else triggerLockdown("Invalid Voice Protocol!");
-  };
-  rec.onerror = () => { document.getElementById("voiceStatus").innerText = "❌ Mic Error, try again!"; }; rec.start();
+  var SR = window.SpeechRecognition || window.webkitSpeechRecognition; if (!SR) { document.getElementById("step3").style.display = "none"; document.getElementById("step4").style.display = "block"; return; }
+  var rec = new SR(); rec.lang = 'en-IN'; document.getElementById("voiceStatus").innerText = "🎙️ Listening...";
+  rec.onresult = function(e) { if (e.results.transcript.toLowerCase().trim().indexOf(_0xS3) !== -1) { document.getElementById("step3").style.display = "none"; document.getElementById("step4").style.display = "block"; } else triggerLockdown("Wrong Voice!"); };
+  rec.onerror = function() { document.getElementById("voiceStatus").innerText = "❌ Mic Error, try again!"; }; rec.start();
 }
-function checkLayer4() {
-  if (document.getElementById("admPass").value.trim() !== _0xS4) { triggerLockdown("Master Key Failed!"); return; }
-  closeAdmin(); isBossActive = true; sessionStorage.setItem("boss_mode", "1"); openBossDashboard();
-}
+function checkLayer4() { if (document.getElementById("admPass").value.trim() !== _0xS4) { triggerLockdown("Master Key Failed!"); return; } closeAdmin(); isBossActive = true; sessionStorage.setItem("boss_mode", "1"); openBossDashboard(); }
 async function openBossDashboard() {
-  document.getElementById("bossDash").style.display = "flex"; let intelEl = document.getElementById("intelList"); intelEl.innerHTML = "Scanning Radar...";
+  document.getElementById("bossDash").style.display = "flex"; var el = document.getElementById("intelList"); el.innerHTML = "Scanning...";
   try {
-    let [rRes, uRes] = await Promise.all([fetch(_0xDB + ".json"), fetch(_0xRADAR + ".json")]);
-    let roomsData = await rRes.json(), usersData = await uRes.json();
-    let html = `<b>Active Rooms:</b> ${roomsData ? Object.keys(roomsData).join(", ") : "None"}<hr style="border-color:#333">`;
-    if (usersData) {
-      Object.keys(usersData).slice(-8).reverse().forEach(k => { let u = usersData[k]; html += `👤 <b>${u.name}</b> [${u.room}]<br>📍 ${u.loc} | 📱 ${u.dev} (${u.time})<br><br>`; });
-    } else html += "No users tracked yet.";
-    intelEl.innerHTML = html;
-  } catch(e) { intelEl.innerHTML = "Radar Offline."; }
+    var rRes = await fetch(_0xDB + ".json"), uRes = await fetch(_0xRADAR + ".json"), rd = await rRes.json(), ud = await uRes.json();
+    var html = "<b>Rooms:</b> " + (rd ? Object.keys(rd).join(", ") : "None") + "<hr style='border-color:#333'>";
+    if (ud) { var keys = Object.keys(ud).slice(-8).reverse(); for (var i = 0; i < keys.length; i++) { var u = ud[keys[i]]; html += "👤 <b>" + u.name + "</b> [" + u.room + "]<br>📍 " + u.loc + " (" + u.time + ")<br><br>"; } }
+    el.innerHTML = html;
+  } catch(e) { el.innerHTML = "Offline."; }
 }
 async function sendGhostMsg() {
-  let txt = document.getElementById("ghostMsgInput").value.trim(); if (!txt || !room) return;
+  var txt = document.getElementById("ghostMsgInput").value.trim(); if (!txt || !room) return;
   document.getElementById("ghostMsgInput").value = ""; document.getElementById("bossDash").style.display = "none";
-  let res = await fetch(`${_0xDB}/${room}.json`, { method: "POST", body: JSON.stringify({ n: "👻", t: txt, ghost: true, time: Date.now() }) });
-  let data = await res.json(); load(true);
-  if (data && data.name) setTimeout(async () => { await fetch(`${_0xDB}/${room}/${data.name}.json`, { method: "DELETE" }); load(true); }, 8000);
+  var res = await fetch(_0xDB + "/" + room + ".json", { method: "POST", body: JSON.stringify({ n: "👻", t: txt, ghost: true, time: Date.now() }) }), data = await res.json(); load(true);
+  if (data && data.name) setTimeout(async function() { await fetch(_0xDB + "/" + room + "/" + data.name + ".json", { method: "DELETE" }); load(true); }, 8000);
 }
-async function switchRoomBoss() {
-  let res = await fetch(_0xDB + ".json"), all = await res.json();
-  let tr = prompt("Active Rooms: " + (all ? Object.keys(all).join(", ") : "None") + "\n\nEnter Room Name:");
-  if (tr) { room = tr; document.getElementById("rc").innerText = room; document.getElementById("bossDash").style.display = "none"; load(true); }
-}
-async function wipeRoomBoss() {
-  let dr = prompt("Enter Room Name to Wipe Completely:");
-  if (dr) { await Promise.all([fetch(`${_0xDB}/${dr}.json`, { method: "DELETE" }), fetch(`${_0xMEM}/${dr}.json`, { method: "DELETE" })]); document.getElementById("bossDash").style.display = "none"; load(true); }
-}
-function formatDateTime(ts) {
-  if (!ts) return ""; let d = new Date(ts);
-  return `${d.toLocaleDateString('en-IN', { day: '2-digit', month: 'short' })} • ${d.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', hour12: true })}`;
-}
-async function post(n, t) { if (!room) return; playMagic(); await fetch(`${_0xDB}/${room}.json`, { method: "POST", body: JSON.stringify({ n: n, t: t, time: Date.now() }) }); load(true); }
-function send() { let i = document.getElementById("mi"), v = i.value.trim(); if (v && nick && room) { post(nick, v); i.value = ""; } }
-async function delMsg(key) { if (!room || !key) return; playMagic(); await fetch(`${_0xDB}/${room}/${key}.json`, { method: "DELETE" }); load(true); }
-async function checkNewUsersSiren() {
-  if (!isBossActive) return;
-  try { let r = await fetch(_0xRADAR + ".json"), d = await r.json(), count = d ? Object.keys(d).length : 0; if (knownUsersCount > 0 && count > knownUsersCount) playSiren(); knownUsersCount = count; } catch(e) {}
-}
-async function load(force = false) {
+async function switchRoomBoss() { var res = await fetch(_0xDB + ".json"), all = await res.json(), tr = prompt("Rooms: " + (all ? Object.keys(all).join(", ") : "None")); if (tr) { room = tr; document.getElementById("rc").innerText = room; document.getElementById("bossDash").style.display = "none"; load(true); } }
+async function wipeRoomBoss() { var dr = prompt("Room to Wipe:"); if (dr) { await fetch(_0xDB + "/" + dr + ".json", { method: "DELETE" }); await fetch(_0xMEM + "/" + dr + ".json", { method: "DELETE" }); document.getElementById("bossDash").style.display = "none"; load(true); } }
+function formatDateTime(ts) { if (!ts) return ""; var d = new Date(ts); return d.toLocaleDateString('en-IN', { day: '2-digit', month: 'short' }) + " • " + d.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', hour12: true }); }
+async function post(n, t) { if (!room) return; await fetch(_0xDB + "/" + room + ".json", { method: "POST", body: JSON.stringify({ n: n, t: t, time: Date.now() }) }); load(true); }
+function send() { var i = document.getElementById("mi"), v = i.value.trim(); if (v && nick && room) { post(nick, v); i.value = ""; } }
+async function delMsg(key) { if (!room || !key) return; await fetch(_0xDB + "/" + room + "/" + key + ".json", { method: "DELETE" }); load(true); }
+async function checkNewUsersSiren() { if (!isBossActive) return; try { var r = await fetch(_0xRADAR + ".json"), d = await r.json(), c = d ? Object.keys(d).length : 0; if (knownUsersCount > 0 && c > knownUsersCount) playSiren(); knownUsersCount = c; } catch(e) {} }
+async function load(force) {
   if (!room) return;
-  try {    let r = await fetch(`${_0xDB}/${room}.json`), d = await r.json(), str = JSON.stringify(d);
-    if (!force && str === lastData) return; lastData = str;
-    let c = document.getElementById("chat"); c.innerHTML = ""; if (!d) return;
-    Object.keys(d).forEach(k => {
-      let m = d[k], div = document.createElement("div");
-      if (m.ghost) { div.className = "msg ghost"; div.innerHTML = `<div style="font-size:10px;opacity:0.8">👻 Vanishing Whisper (8s)</div><div>${m.t}</div>`; }
-      else {
-        div.className = (m.n == nick ? "msg me" : "msg");
-        let delHtml = (m.n === nick || isBossActive) ? `<button class="del-btn" onclick="delMsg('${k}')">✕</button>` : "";
-        div.innerHTML = `<div class="msg-head"><span>${m.n}</span>${delHtml}</div><div>${m.t}</div><div class="msg-time">${formatDateTime(m.time)}</div>`;
-      }
-      c.appendChild(div);
-    });
-    c.scrollTop = c.scrollHeight;
-  } catch (e) {}
-}
-load(true); setInterval(() => { load(false); checkNewUsersSiren(); syncRoomLimit(); }, 2000);
-</script>
-</body>
-</html>
-
+  try {
+    var r = await fetch(_0xDB + "/" + room + ".json"), d = await r.json(), str = JSON.stringify(d); if (!force && str === lastData) return; lastData = str;
  
