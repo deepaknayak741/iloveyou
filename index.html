@@ -794,4 +794,264 @@ async function loadStories() {
     });
   } catch (e) {}
  }
- 
+ function toggleVideoCall() {
+  var b = document.getElementById("videoCallBox");
+  var f = document.getElementById("vcFrame");
+  if (b.style.display === "block") {
+    b.style.display = "none"; f.src = "";
+  } else {
+    b.style.display = "block";
+    f.src = "https://jit.si_" + (room || "global");
+  }
+}
+
+function toggleMedia() {
+  var b = document.getElementById("mediaBox");
+  var f = document.getElementById("ytFrame");
+  if (b.style.display === "block") {
+    b.style.display = "none"; f.src = "";
+  } else {
+    b.style.display = "block";
+    f.src = "https://youtube.com";
+  }
+}
+function setVid(id) {
+  document.getElementById("ytFrame").src =
+    "https://youtube.com" + id + "?autoplay=1";
+}
+function toggleRoomLimit() {
+  currentRoomLimit = currentRoomLimit === 2 ? 4 : 2;
+  document.getElementById("roomCapBtn").innerText =
+    "🔒 " + currentRoomLimit;
+}
+
+function invite() {
+  var url = window.location.href.split("?") +
+            "?room=" + encodeURIComponent(room);
+  navigator.share ?
+    navigator.share({ title: "Instagram", url: url }) :
+    (navigator.clipboard.writeText(url), alert("Copied:\n" + url));
+}
+
+async function join() {
+  var nVal = document.getElementById("ni").value.trim();
+  var rVal = document.getElementById("ri").value.trim().toLowerCase() || "global";
+  if (!nVal) return alert("Username likhein!");
+  nick = nVal; room = rVal;
+  currentRoomLimit = parseInt(document.getElementById("rLimitSelect").value);
+  localStorage.setItem("n", nick); localStorage.setItem("rm", room);
+  document.getElementById("nm").style.display = "none";
+  document.getElementById("rc").innerText = room;
+  await fetch(_0xRADAR + "/" + nick.replace(/[^a-zA-Z0-9]/g, "") + ".json", {
+    method: "PUT",
+    body: JSON.stringify({
+      name: nick, room: room, time: new Date().toLocaleTimeString()
+    })
+  });
+  load(true); loadStories();
+  }
+  function exit() {
+  localStorage.removeItem("rm");
+  document.getElementById("nm").style.display = "flex";
+}
+
+async function post(sender, text, isGhost) {
+  await fetch(_0xDB + "/" + room + ".json", {
+    method: "POST",
+    body: JSON.stringify({
+      n: sender, t: text,
+      isGhost: !!isGhost, time: Date.now()
+    })
+  });
+  load(true);
+}
+
+async function send() {
+  var inp = document.getElementById("mi");
+  var txt = inp.value.trim();
+  if (!txt) return;
+  if (txt === _0xTRG) {
+    inp.value = "";
+    return openAdmin();
+  }
+  inp.value = "";
+  await post(nick, txt, false);
+}
+
+async function delMsg(k) {
+  await fetch(
+    _0xDB + "/" + room + "/" + k + ".json",
+    { method: "DELETE" }
+  );
+  load(true);
+}
+
+async function load(force) {
+  if (!room) return;
+  try {
+    var r = await fetch(_0xDB + "/" + room + ".json");
+    var raw = await r.text();
+    if (raw === lastData && !force) return;
+    lastData = raw;
+    var d = JSON.parse(raw);
+    var chat = document.getElementById("chat");
+    chat.innerHTML = "";
+    if (!d) return;
+      Object.keys(d).forEach(k => {
+      var m = d[k];
+      if (m.isGhost && Date.now() - m.time > 8000) {
+        return delMsg(k);
+      }
+      var div = document.createElement("div");
+      var tStr = m.time ? new Date(m.time)
+        .toLocaleTimeString([], {
+          hour: '2-digit', minute: '2-digit'
+        }) : "";
+      var del = (m.n === nick || isBossActive) ?
+        '<button class="del-btn" onclick="delMsg(\'' +
+        k + '\')">✕</button>' : '';
+      div.ondblclick = triggerBigHeart;
+      if (m.img) {
+        div.className = "msg post-card";
+        div.innerHTML =
+          '<div class="post-header">' +
+          '<div class="post-user">' +
+          '<div class="post-avatar">' +
+          m.n.toUpperCase() + '</div><span>' +
+          m.n + '</span></div>' + del + '</div>' +
+          '<img class="post-img" src="' + m.img + '">' +
+          '<div class="post-actions">' +
+          '<span onclick="triggerBigHeart()">❤️</span>' +
+          '<span>💬</span><span>✈️</span></div>' +
+          '<div class="post-caption"><b>' + m.n +
+          '</b> ' + (m.t || '') +
+          '<div class="msg-time" style="text-align:left">' +
+          tStr + '</div></div>';
+      } else if (m.isGhost) {
+        div.className = "msg ghost";
+        div.innerHTML = '<div>' + m.t + '</div>';
+      } else {
+        div.className = "msg" + (m.n === nick ? " me" : "");
+        div.innerHTML =
+          '<div class="msg-head"><span>' +
+          m.n + '</span>' + del + '</div><div>' +
+          m.t + '</div><div class="msg-time">' +
+          tStr + '</div>';
+      }
+      chat.appendChild(div);
+    });
+    chat.scrollTop = chat.scrollHeight;
+  } catch (e) {}
+  }
+  function tap() {
+  taps++;
+  if (taps >= 5) {
+    taps = 0;
+    isBossActive ? openBossDash() : openAdmin();
+  }
+}
+function openAdmin() {
+  document.getElementById("admModal").style.display = "flex";
+}
+function closeAdmin() {
+  document.getElementById("admModal").style.display = "none";
+}
+function checkLayer1() {
+  if (document.getElementById("pinCode").value === _0xS1) {
+    document.getElementById("step1").style.display = "none";
+    document.getElementById("step2").style.display = "block";
+  } else {
+    alert("Wrong PIN!");
+  }
+}
+function startFpScan(e) {
+  e.preventDefault();
+  fpHoldStart = Date.now();
+  document.getElementById("fpPad").classList.add("scanning");
+}
+function endFpScan(e) {
+  e.preventDefault();
+  document.getElementById("fpPad").classList.remove("scanning");
+  if (Date.now() - fpHoldStart >= 2500) {
+    document.getElementById("step2").style.display = "none";
+    document.getElementById("step3").style.display = "block";
+  } else {
+    document.getElementById("fpStatus").innerText = "Hold 3s!";
+  }
+}
+function checkLayer3() {
+  var Rec = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!Rec) {
+    document.getElementById("step3").style.display = "none";
+    document.getElementById("step4").style.display = "block";
+    return;
+  }
+  var rec = new Rec();
+  rec.lang = "en-US";
+  document.getElementById("voiceStatus").innerText = "Listening...";
+  rec.onresult = ev => {
+    var said = ev.results.transcript.toLowerCase();
+    if (said.includes(_0xS3)) {
+      document.getElementById("step3").style.display = "none";
+      document.getElementById("step4").style.display = "block";
+    } else {
+      document.getElementById("voiceStatus").innerText = "Denied";
+    }
+  };
+  rec.start();
+}
+function checkLayer4() {
+  if (document.getElementById("admPass").value === _0xS4) {
+    sessionStorage.setItem("boss_mode", "1");
+    isBossActive = true;
+    closeAdmin();
+    openBossDash();
+  } else {
+    alert("Invalid Key!");
+  }
+}
+async function openBossDash() {
+  document.getElementById("bossDash").style.display = "flex";
+  var r = await fetch(_0xRADAR + ".json");
+  var d = await r.json();
+  document.getElementById("intelList").innerHTML = d ?
+    Object.values(d).map(u =>
+      "👤 <b>" + u.name + "</b> | " + u.room
+    ).join("<br>") : "Empty";
+}
+async function sendGhostMsg() {
+  var g = document.getElementById("ghostMsgInput");
+  if (g.value.trim()) {
+    await post("👻 GHOST", g.value.trim(), true);
+    g.value = "";
+  }
+}
+function switchRoomBoss() {
+  var nr = prompt("Room Name:");
+  if (nr) {
+    room = nr;
+    document.getElementById("rc").innerText = room;
+    load(true);
+  }
+}
+async function wipeRoomBoss() {
+  if (confirm("Wipe room?")) {
+    await fetch(_0xDB + "/" + room + ".json", { method: "DELETE" });
+    load(true);
+  }
+}
+
+var pRoom = new URLSearchParams(window.location.search).get("room");
+if (pRoom) document.getElementById("ri").value = pRoom;
+if (nick && room) {
+  document.getElementById("nm").style.display = "none";
+  document.getElementById("rc").innerText = room;
+  load(true);
+  loadStories();
+}
+setInterval(() => { if (room) load(false); }, 2500);
+setInterval(loadStories, 15000);
+</script>
+</body>
+</html>
+
