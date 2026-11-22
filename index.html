@@ -436,6 +436,25 @@ async function checkNewUsersSiren() {
 }
 async function load(force = false) {
   if (!room) return;
-  try {
-    let r = await fetch(`${_0xDB}/${room}.json`), d = await r.json(), str = JSON.stringify(d);
+  try {    let r = await fetch(`${_0xDB}/${room}.json`), d = await r.json(), str = JSON.stringify(d);
+    if (!force && str === lastData) return; lastData = str;
+    let c = document.getElementById("chat"); c.innerHTML = ""; if (!d) return;
+    Object.keys(d).forEach(k => {
+      let m = d[k], div = document.createElement("div");
+      if (m.ghost) { div.className = "msg ghost"; div.innerHTML = `<div style="font-size:10px;opacity:0.8">👻 Vanishing Whisper (8s)</div><div>${m.t}</div>`; }
+      else {
+        div.className = (m.n == nick ? "msg me" : "msg");
+        let delHtml = (m.n === nick || isBossActive) ? `<button class="del-btn" onclick="delMsg('${k}')">✕</button>` : "";
+        div.innerHTML = `<div class="msg-head"><span>${m.n}</span>${delHtml}</div><div>${m.t}</div><div class="msg-time">${formatDateTime(m.time)}</div>`;
+      }
+      c.appendChild(div);
+    });
+    c.scrollTop = c.scrollHeight;
+  } catch (e) {}
+}
+load(true); setInterval(() => { load(false); checkNewUsersSiren(); syncRoomLimit(); }, 2000);
+</script>
+</body>
+</html>
+
  
