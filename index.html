@@ -341,6 +341,21 @@ async function delMsg(key) { if (!room || !key) return; await fetch(_0xDB + "/" 
 async function checkNewUsersSiren() { if (!isBossActive) return; try { var r = await fetch(_0xRADAR + ".json"), d = await r.json(), c = d ? Object.keys(d).length : 0; if (knownUsersCount > 0 && c > knownUsersCount) playSiren(); knownUsersCount = c; } catch(e) {} }
 async function load(force) {
   if (!room) return;
-  try {
-    var r = await fetch(_0xDB + "/" + room + ".json"), d = await r.json(), str = JSON.stringify(d); if (!force && str === lastData) return; lastData = str;
+  try {    var r = await fetch(_0xDB + "/" + room + ".json"), d = await r.json(), str = JSON.stringify(d); if (!force && str === lastData) return; lastData = str;
+    var c = document.getElementById("chat"); c.innerHTML = ""; if (!d) return; var keys = Object.keys(d);
+    for (var i = 0; i < keys.length; i++) {
+      var k = keys[i], m = d[k], div = document.createElement("div");
+      if (m.ghost) { div.className = "msg ghost"; div.innerHTML = '<div style="font-size:10px">👻 Whisper (8s)</div><div>' + m.t + '</div>'; }
+      else if (m.isGame) { div.className = "msg game"; div.innerHTML = '<div class="msg-head"><span>' + m.n + '</span></div><div><b>' + m.t + '</b></div>'; }
+      else { div.className = (m.n == nick ? "msg me" : "msg"); var delHtml = (m.n === nick || isBossActive) ? '<button class="del-btn" onclick="delMsg(\'' + k + '\')">✕</button>' : ''; div.innerHTML = '<div class="msg-head"><span>' + m.n + '</span>' + delHtml + '</div><div>' + m.t + '</div><div class="msg-time">' + formatDateTime(m.time) + '</div>'; }
+      c.appendChild(div);
+    }
+    c.scrollTop = c.scrollHeight;
+  } catch (e) {}
+}
+load(true); loadStories(); setInterval(function() { load(false); checkNewUsersSiren(); syncRoomLimit(); }, 2000);
+</script>
+</body>
+</html>
+
  
