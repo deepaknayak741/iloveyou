@@ -8,7 +8,7 @@
  content=
  "width=device-width">
 <title>
-My Insta Chat
+Insta Live App
 </title>
 <style>
 body {
@@ -126,11 +126,12 @@ function start() {
   "जुड़ रहा है...<br>";
 
  if (tm) clearInterval(tm);
+ load(t);
  tm = setInterval(
   function() {
    load(t);
   },
-  3000
+  4000
  );
 }
 
@@ -149,13 +150,20 @@ async function load(t) {
   let bx = document
    .getElementById('inbox');
 
+  if (d.error) {
+   bx.innerHTML =
+    "❌ एरर: " +
+    d.error.message;
+   return;
+  }
+
   if (d.data &&
       d.data.length > 0) {
    bx.innerHTML = "";
-   let mList = d.data
+   let list = d.data
     .messages.data;
 
-   mList.forEach(function(m) {
+   list.forEach(function(m) {
     let nm = m.from.name
      || "User";
     let id = m.from.id;
@@ -171,9 +179,12 @@ async function load(t) {
     h += "[रिप्लाई]</small></p>";
     bx.innerHTML += h;
    });
+  } else {
+   bx.innerHTML =
+    "कोई नया मैसेज नहीं है।";
   }
  } catch (e) {
-  console.log("Wait...");
+  console.log(e);
  }
 }
 
@@ -227,10 +238,10 @@ async function reply() {
    .getElementById('txt')
    .value = "";
  } else {
-  alert("❌ एरर: चेक करें");
+  alert("❌ एरर: " +
+   res.error.message);
  }
 }
 </script>
 </body>
- </html>
- 
+</html>
