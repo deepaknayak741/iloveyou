@@ -8,7 +8,7 @@
  content=
  "width=device-width">
 <title>
-Insta App
+My Insta Chat
 </title>
 <style>
 body {
@@ -16,197 +16,221 @@ body {
  color: #fff;
  font-family:
   sans-serif;
- padding: 10px;
+ padding: 12px;
 }
 .box {
- background: #151515;
+ background: #141414;
  border:
   1px solid #333;
  border-radius: 12px;
  padding: 15px;
 }
-h2 {
- color: #ff2a6d;
+h3 {
+ color: #e1306c;
  text-align: center;
+ margin-top: 0;
 }
 input {
  width: 90%;
  padding: 10px;
+ margin: 6px 0;
  background: #222;
  color: #fff;
  border:
   1px solid #444;
  border-radius: 8px;
- font-size: 16px;
 }
 .btn {
- width: 100%;
- padding: 12px;
- margin-top: 10px;
+ width: 98%;
+ padding: 10px;
+ margin-top: 6px;
  border: none;
  border-radius: 8px;
  font-weight: bold;
+ color: #fff;
 }
 .pink {
  background: #e1306c;
- color: #fff;
 }
-.dark {
- background: #262626;
- color: #00ff96;
- text-align: left;
+.green {
+ background: #00b86b;
 }
-.panel {
- display: none;
- margin-top: 15px;
-}
-.tag {
- display: inline-block;
- background: #222;
- color: #00ff96;
- padding: 5px;
- margin: 4px;
- border-radius: 5px;
+.chat {
+ margin-top: 12px;
+ border:
+  1px solid #333;
+ padding: 10px;
+ height: 160px;
+ overflow-y: auto;
+ font-size: 14px;
 }
 </style>
 </head>
- <body>
+<body>
+
 <div class="box">
-<h2>
-🔎 Insta ID
-</h2>
+<h3>📸 Insta Live App</h3>
+
 <input
  type="text"
- id="uid"
+ id="tk"
  placeholder=
- "Insta ID लिखें">
+ "1. अपना Token डालें">
+
 <button
  class="btn pink"
- onclick="find()">
-जानकारी निकालें
+ onclick="start()">
+📡 लाइव मैसेज चालू करें
 </button>
 
 <div
- class="panel"
- id="menu">
-<p id="lbl"></p>
-
-<button
- class="btn dark"
- onclick="go('p')">
-👤 1. प्रोफाइल
-</button>
-
-<button
- class="btn dark"
- onclick="go('r')">
-🎬 2. रील्स
-</button>
-
-<button
- class="btn dark"
- onclick="go('t')">
-🏷️ 3. टैग फोटो
-</button>
-
-<button
- class="btn dark"
- onclick="go('m')">
-💬 4. मैसेज (DM)
-</button>
-
-<button
- class="btn dark"
- onclick="copy()">
-📋 5. लिंक कॉपी
-</button>
+ class="chat"
+ id="inbox">
+यहाँ मैसेज दिखेंगे...
 </div>
 
-<div id="list"></div>
-</div>
- <script>
-let u = "";
-let arr = [];
+<input
+ type="text"
+ id="rid"
+ placeholder=
+ "रिप्लाई ID (क्लिक करें)">
 
-function find() {
- let el = document
-  .getElementById('uid');
- let v = el.value
-  .trim();
- if (v.startsWith('@')) {
-  v = v.substring(1);
- }
- if (v === "") {
-  alert("ID लिखें!");
+<input
+ type="text"
+ id="txt"
+ placeholder=
+ "अपना जवाब लिखें...">
+
+<button
+ class="btn green"
+ onclick="reply()">
+📤 जवाब भेजें (Send)
+</button>
+</div>
+<script>
+let tm = null;
+
+function start() {
+ let t = document
+  .getElementById('tk')
+  .value.trim();
+
+ if (t === "") {
+  alert("Token डालें!");
   return;
  }
- u = v;
- let lb = document
-  .getElementById('lbl');
- lb.innerText =
-  "ID: @" + u;
- let mn = document
-  .getElementById('menu');
- mn.style.display =
-  "block";
- save(u);
-}
 
-function go(t) {
- let b = "https://";
- b += "://instagram.com";
- let link = b + u + "/";
- if (t === 'r') {
-  link += "reels/";
- }
- if (t === 't') {
-  link += "tagged/";
- }
- if (t === 'm') {
-  link = "https://" +
-   "ig.me/m/" + u;
- }
- window.open(
-  link,
-  "_blank"
+ let bx = document
+  .getElementById('inbox');
+ bx.innerHTML =
+  "जुड़ रहा है...<br>";
+
+ if (tm) clearInterval(tm);
+ tm = setInterval(
+  function() {
+   load(t);
+  },
+  3000
  );
 }
 
-function copy() {
- let b = "https://";
- b += "://instagram.com";
- let link = b + u + "/";
- navigator.clipboard
-  .writeText(link);
- alert("कॉपी हो गया!");
-}
+async function load(t) {
+ let u = "https://graph.";
+ u += "://facebook.com";
+ u += "me/conversations?";
+ u += "platform=instagram";
+ u += "&fields=messages";
+ u += "{message,from}";
+ u += "&access_token=" + t;
 
-function save(n) {
- if (!arr.includes(n)) {
-  arr.push(n);
- }
- let ls = document
-  .getElementById('list');
- ls.innerHTML = "";
- arr.forEach(
-  function(x) {
-   let s = "<span ";
-   s += "class='tag' ";
-   s += "onclick=\"";
-   s += "re('" + x;
-   s += "')\">@" + x;
-   s += "</span>";
-   ls.innerHTML += s;
+ try {
+  let r = await fetch(u);
+  let d = await r.json();
+  let bx = document
+   .getElementById('inbox');
+
+  if (d.data &&
+      d.data.length > 0) {
+   bx.innerHTML = "";
+   let mList = d.data
+    .messages.data;
+
+   mList.forEach(function(m) {
+    let nm = m.from.name
+     || "User";
+    let id = m.from.id;
+    let h = "<p onclick=\"";
+    h += "setId('" + id;
+    h += "')\" style='";
+    h += "border-bottom:";
+    h += "1px solid #333;'>";
+    h += "<b>" + nm + ":</b> ";
+    h += m.message;
+    h += " <small style='";
+    h += "color:#00ff96;'>";
+    h += "[रिप्लाई]</small></p>";
+    bx.innerHTML += h;
+   });
   }
- );
+ } catch (e) {
+  console.log("Wait...");
+ }
 }
 
-function re(n) {
- let el = document
-  .getElementById('uid');
- el.value = n;
- find();
+function setId(id) {
+ document
+  .getElementById('rid')
+  .value = id;
+}
+
+async function reply() {
+ let t = document
+  .getElementById('tk')
+  .value.trim();
+ let id = document
+  .getElementById('rid')
+  .value.trim();
+ let tx = document
+  .getElementById('txt')
+  .value.trim();
+
+ if (!t || !id || !tx) {
+  alert("सब बॉक्स भरें!");
+  return;
+ }
+
+ let u = "https://graph.";
+ u += "://facebook.com";
+ u += "me/messages?";
+ u += "access_token=" + t;
+
+ let bodyData = {
+  recipient: { id: id },
+  message: { text: tx }
+ };
+
+ let r = await fetch(u, {
+  method: "POST",
+  headers: {
+   "Content-Type":
+    "application/json"
+  },
+  body: JSON.stringify(
+   bodyData
+  )
+ });
+
+ let res = await r.json();
+ if (res.message_id) {
+  alert("✅ मैसेज चला गया!");
+  document
+   .getElementById('txt')
+   .value = "";
+ } else {
+  alert("❌ एरर: चेक करें");
+ }
 }
 </script>
 </body>
-</html>
+ </html>
+ 
