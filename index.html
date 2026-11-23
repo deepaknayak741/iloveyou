@@ -1,1 +1,212 @@
-mera aap wanich chet khul jaye,kulte hi usme nambar dalne ka opshan aaye usne nambar dalte hi,uske sare mesej meri eski pr aa jaye or ek opshan instagram id dalte hi uske sare mesej dikhne lage
+<!DOCTYPE html>
+<html>
+<head>
+<meta
+ charset="UTF-8">
+<meta
+ name="viewport"
+ content=
+ "width=device-width">
+<title>
+Insta App
+</title>
+<style>
+body {
+ background: #000;
+ color: #fff;
+ font-family:
+  sans-serif;
+ padding: 10px;
+}
+.box {
+ background: #151515;
+ border:
+  1px solid #333;
+ border-radius: 12px;
+ padding: 15px;
+}
+h2 {
+ color: #ff2a6d;
+ text-align: center;
+}
+input {
+ width: 90%;
+ padding: 10px;
+ background: #222;
+ color: #fff;
+ border:
+  1px solid #444;
+ border-radius: 8px;
+ font-size: 16px;
+}
+.btn {
+ width: 100%;
+ padding: 12px;
+ margin-top: 10px;
+ border: none;
+ border-radius: 8px;
+ font-weight: bold;
+}
+.pink {
+ background: #e1306c;
+ color: #fff;
+}
+.dark {
+ background: #262626;
+ color: #00ff96;
+ text-align: left;
+}
+.panel {
+ display: none;
+ margin-top: 15px;
+}
+.tag {
+ display: inline-block;
+ background: #222;
+ color: #00ff96;
+ padding: 5px;
+ margin: 4px;
+ border-radius: 5px;
+}
+</style>
+</head>
+ <body>
+<div class="box">
+<h2>
+🔎 Insta ID
+</h2>
+<input
+ type="text"
+ id="uid"
+ placeholder=
+ "Insta ID लिखें">
+<button
+ class="btn pink"
+ onclick="find()">
+जानकारी निकालें
+</button>
+
+<div
+ class="panel"
+ id="menu">
+<p id="lbl"></p>
+
+<button
+ class="btn dark"
+ onclick="go('p')">
+👤 1. प्रोफाइल
+</button>
+
+<button
+ class="btn dark"
+ onclick="go('r')">
+🎬 2. रील्स
+</button>
+
+<button
+ class="btn dark"
+ onclick="go('t')">
+🏷️ 3. टैग फोटो
+</button>
+
+<button
+ class="btn dark"
+ onclick="go('m')">
+💬 4. मैसेज (DM)
+</button>
+
+<button
+ class="btn dark"
+ onclick="copy()">
+📋 5. लिंक कॉपी
+</button>
+</div>
+
+<div id="list"></div>
+</div>
+ <script>
+let u = "";
+let arr = [];
+
+function find() {
+ let el = document
+  .getElementById('uid');
+ let v = el.value
+  .trim();
+ if (v.startsWith('@')) {
+  v = v.substring(1);
+ }
+ if (v === "") {
+  alert("ID लिखें!");
+  return;
+ }
+ u = v;
+ let lb = document
+  .getElementById('lbl');
+ lb.innerText =
+  "ID: @" + u;
+ let mn = document
+  .getElementById('menu');
+ mn.style.display =
+  "block";
+ save(u);
+}
+
+function go(t) {
+ let b = "https://";
+ b += "://instagram.com";
+ let link = b + u + "/";
+ if (t === 'r') {
+  link += "reels/";
+ }
+ if (t === 't') {
+  link += "tagged/";
+ }
+ if (t === 'm') {
+  link = "https://" +
+   "ig.me/m/" + u;
+ }
+ window.open(
+  link,
+  "_blank"
+ );
+}
+
+function copy() {
+ let b = "https://";
+ b += "://instagram.com";
+ let link = b + u + "/";
+ navigator.clipboard
+  .writeText(link);
+ alert("कॉपी हो गया!");
+}
+
+function save(n) {
+ if (!arr.includes(n)) {
+  arr.push(n);
+ }
+ let ls = document
+  .getElementById('list');
+ ls.innerHTML = "";
+ arr.forEach(
+  function(x) {
+   let s = "<span ";
+   s += "class='tag' ";
+   s += "onclick=\"";
+   s += "re('" + x;
+   s += "')\">@" + x;
+   s += "</span>";
+   ls.innerHTML += s;
+  }
+ );
+}
+
+function re(n) {
+ let el = document
+  .getElementById('uid');
+ el.value = n;
+ find();
+}
+</script>
+</body>
+</html>
