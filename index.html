@@ -119,7 +119,7 @@ async function load(t) {
 "/conversations?" +
 "platform=instagram&" +
 "limit=1&fields=" +
-"messages.limit(3)" +
+"messages.limit(10)" +
 "{message,from}&" +
 "access_token=" + t;
  try {
@@ -141,7 +141,7 @@ async function load(t) {
     .messages.data;
    ms.forEach(m => {
     let i = m.from.id;
-if (i != "17841451638514561") {
+if (i == "17841451638514561") { 
  let n = m.from.username
   || m.from.name || "User";
  bx.innerHTML +=
