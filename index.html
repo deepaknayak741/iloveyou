@@ -1,141 +1,140 @@
 <!DOCTYPE html>
-<html lang="hi">
+<html>
 <head>
-<meta charset="UTF-8">
 <meta name="viewport"
- content="width=device-width,initial-scale=1">
-<title>Insta Live App</title>
-<style>
-body{background:#111;color:#fff;
- font-family:sans-serif;padding:15px}
-.box{max-width:420px;margin:auto;
- background:#1e1e1e;padding:20px;
- border-radius:14px}
-h2{text-align:center;color:#ff4081}
-input,button{width:100%;padding:12px;
- margin:8px 0;border-radius:8px;
- border:none;box-sizing:border-box}
-input{background:#2c2c2c;color:#fff}
-.b1{background:#e91e63;color:#fff;
- font-weight:bold}
-.b2{background:#00c853;color:#fff;
- font-weight:bold}
-#inbox{background:#141414;height:210px;
- overflow-y:auto;padding:10px;
- border-radius:8px;margin:10px 0;
- border:1px solid #333}
-#inbox p{border-bottom:1px solid #2a2a2a;
- padding:6px 0;margin:0;cursor:pointer}
-</style>
+ content="width=device-width">
 </head>
-<body>
-<div class="box">
- <h2>📸 Insta Live App</h2>
- <input id="tk" type="password"
-  placeholder="Access Token डालें">
- <button class="b1" onclick="start()">
-  📡 लाइव मैसेज चालू करें
- </button>
- <div id="inbox">
-  यहाँ मैसेज दिखेंगे...
- </div>
- <input id="rid"
-  placeholder="रिप्लाई ID (मैसेज चुनें)">
- <input id="txt"
-  placeholder="जवाब लिखें...">
- <button class="b2" onclick="reply()">
-  📤 जवाब भेजें
- </button>
+<body style="background:#111;
+ color:#fff;font-family:sans-serif;
+ padding:15px">
+
+<h3>📸 Insta Live</h3>
+
+<input id="tk"
+ placeholder="Page Token डालें"
+ style="width:100%;padding:10px;
+ margin:5px 0">
+
+<button onclick="go()"
+ style="width:100%;padding:10px;
+ background:#e91e63;color:#fff;
+ border:0">
+ 📡 मैसेज देखें
+</button>
+
+<div id="bx"
+ style="background:#222;
+ padding:10px;margin:10px 0;
+ min-height:120px">
+ यहाँ मैसेज आएंगे...
 </div>
+
+<input id="id"
+ placeholder="रिप्लाई ID"
+ style="width:100%;padding:10px;
+ margin:5px 0">
+
+<input id="tx"
+ placeholder="जवाब लिखें..."
+ style="width:100%;padding:10px;
+ margin:5px 0">
+
+<button onclick="snd()"
+ style="width:100%;padding:10px;
+ background:#00c853;color:#fff;
+ border:0">
+ 📤 जवाब भेजें
+</button>
+
 <script>
-let tm = null;
-const host =
- "https://facebook.com";
-const myId = "17841451638514561";
+const H =
+ "https://facebook.com" +
+ "/v21.0/me";
+const ME = "17841451638514561";
 
-function start() {
- let t = document.getElementById('tk')
+async function go() {
+ let t = document
+  .getElementById('tk')
   .value.trim();
- if (!t) { alert("Token डालें!"); return; }
- document.getElementById('inbox')
-  .innerHTML = "चेक हो रहा है...";
- if (tm) clearInterval(tm);
- load(t);
- tm = setInterval(() => load(t), 10000);
-}
-
-async function load(t) {
- let u = host + "/conversations?" +
-  "platform=instagram&limit=3&fields=" +
-  "participants,messages.limit(1)" +
-  "{message,from}&access_token=" + t;
+ let b = document
+  .getElementById('bx');
+ if (!t) return alert("Token डालें");
+ b.innerHTML = "लोड हो रहा है...";
+ let u = H + "/conversations?" +
+  "platform=instagram&limit=3&" +
+  "fields=participants," +
+  "messages.limit(1)" +
+  "{message,from}&access_token=" +
+  encodeURIComponent(t);
  try {
   let r = await fetch(u);
   let d = await r.json();
-  let bx = document.getElementById('inbox');
   if (d.error) {
-   bx.innerHTML = "❌ " + d.error.message;
+   b.innerHTML =
+    "❌ " + d.error.message;
    return;
   }
-  if (d.data && d.data.length > 0) {
-   bx.innerHTML = "";
-   d.data.forEach(c => {
-    if (!c.messages) return;
-    let m = c.messages.data.at(0);
-    if (!m) return;
-    let p = c.participants &&
-     c.participants.data.find(
-      x => x.id != myId);
-    let i = p ? p.id : m.from.id;
-    let n = (p && p.username) ||
-     m.from.name || "User";
-    bx.innerHTML +=
-     `<p onclick="setId('${i}')">` +
-     `<b>${n}:</b> ${m.message} ` +
-     `<small style="color:#0f9">` +
-     `[रिप्लाई]</small></p>`;
-   });
-  } else {
-   bx.innerHTML = "कोई मैसेज नहीं है।";
-  }
+  b.innerHTML = "";
+  d.data.forEach(c => {
+   let m = c.messages &&
+    c.messages.data.at(0);
+   if (!m) return;
+   let p = c.participants &&
+    c.participants.data.find(
+     x => x.id != ME);
+   let i = p ? p.id : m.from.id;
+   let n = (p && p.username) ||
+    m.from.name || "User";
+   b.innerHTML +=
+    `<p onclick="set('${i}')">` +
+    `<b>${n}:</b> ${m.message} ` +
+    `<u>[रिप्लाई]</u></p>`;
+  });
  } catch (e) {
-  document.getElementById('inbox')
-   .innerHTML = "⚠️ " + e.message;
+  b.innerHTML = "⚠️ " + e.message;
  }
-}
- function setId(id) {
- document.getElementById('rid').value = id;
 }
 
-async function reply() {
- let t = document.getElementById('tk')
+function set(i) {
+ document.getElementById('id')
+  .value = i;
+}
+
+async function snd() {
+ let t = document
+  .getElementById('tk')
   .value.trim();
- let id = document.getElementById('rid')
+ let i = document
+  .getElementById('id')
   .value.trim();
- let tx = document.getElementById('txt')
+ let x = document
+  .getElementById('tx')
   .value.trim();
- if (!t || !id || !tx) {
-  alert("सब भरें!"); return;
+ if (!t || !i || !x) {
+  return alert("सब भरें");
  }
- let u = host + "/messages?" +
-  "access_token=" + t;
+ let u = H + "/messages?" +
+  "access_token=" +
+  encodeURIComponent(t);
  try {
   let r = await fetch(u, {
    method: "POST",
    headers: {
-    "Content-Type": "application/json"
+    "Content-Type":
+     "application/json"
    },
    body: JSON.stringify({
-    recipient: { id: id },
-    message: { text: tx }
+    recipient: { id: i },
+    message: { text: x }
    })
   });
   let d = await r.json();
   if (d.error) {
    alert("❌ " + d.error.message);
   } else {
-   alert("✅ जवाब भेज दिया गया!");
-   document.getElementById('txt').value = "";
+   alert("✅ चला गया!");
+   document.getElementById('tx')
+    .value = "";
   }
  } catch (e) {
   alert("⚠️ " + e.message);
@@ -143,4 +142,5 @@ async function reply() {
 }
 </script>
 </body>
-</html>
+ </html>
+ 
