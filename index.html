@@ -1,215 +1,146 @@
 <!DOCTYPE html>
-<html>
+<html lang="hi">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport"
- content="width=device-width">
-<title>Insta App</title>
+ content="width=device-width,initial-scale=1">
+<title>Insta Live App</title>
 <style>
-body {
- background: #000;
- color: #fff;
- font-family: sans-serif;
- padding: 12px;
-}
-.box {
- background: #141414;
- border: 1px solid #333;
- border-radius: 12px;
- padding: 15px;
-}
-h3 {
- color: #e1306c;
- text-align: center;
-}
-input {
- width: 90%;
- padding: 10px;
- margin: 6px 0;
- background: #222;
- color: #fff;
- border: 1px solid #444;
- border-radius: 8px;
-}
-.btn {
- width: 98%;
- padding: 10px;
- margin-top: 6px;
- border: none;
- border-radius: 8px;
- font-weight: bold;
- color: #fff;
-}
-.pink {
- background: #e1306c;
-}
-.green {
- background: #00b86b;
-}
-.chat {
- margin-top: 12px;
- border: 1px solid #333;
- padding: 10px;
- height: 160px;
- overflow-y: auto;
-}
+body{background:#111;color:#fff;
+ font-family:sans-serif;padding:15px}
+.box{max-width:420px;margin:auto;
+ background:#1e1e1e;padding:20px;
+ border-radius:14px}
+h2{text-align:center;color:#ff4081}
+input,button{width:100%;padding:12px;
+ margin:8px 0;border-radius:8px;
+ border:none;box-sizing:border-box}
+input{background:#2c2c2c;color:#fff}
+.b1{background:#e91e63;color:#fff;
+ font-weight:bold}
+.b2{background:#00c853;color:#fff;
+ font-weight:bold}
+#inbox{background:#141414;height:210px;
+ overflow-y:auto;padding:10px;
+ border-radius:8px;margin:10px 0;
+ border:1px solid #333}
+#inbox p{border-bottom:1px solid #2a2a2a;
+ padding:6px 0;margin:0;cursor:pointer}
 </style>
 </head>
 <body>
 <div class="box">
-<h3>📸 Insta Live App</h3>
-
-<input type="text"
- id="tk"
- placeholder="Token डालें">
-
-<button class="btn pink"
- onclick="start()">
-📡 लाइव मैसेज चालू करें
-</button>
-
-<div class="chat"
- id="inbox">
-यहाँ मैसेज दिखेंगे...
-</div>
-
-<input type="text"
- id="rid"
- placeholder="रिप्लाई ID">
-
-<input type="text"
- id="txt"
- placeholder="जवाब लिखें...">
-
-<button class="btn green"
- onclick="reply()">
-📤 जवाब भेजें
-</button>
+ <h2>📸 Insta Live App</h2>
+ <input id="tk" type="password"
+  placeholder="Access Token डालें">
+ <button class="b1" onclick="start()">
+  📡 लाइव मैसेज चालू करें
+ </button>
+ <div id="inbox">
+  यहाँ मैसेज दिखेंगे...
+ </div>
+ <input id="rid"
+  placeholder="रिप्लाई ID (मैसेज चुनें)">
+ <input id="txt"
+  placeholder="जवाब लिखें...">
+ <button class="b2" onclick="reply()">
+  📤 जवाब भेजें
+ </button>
 </div>
 <script>
 let tm = null;
-const host = [
- "https:", "",
- "graph." +
-"facebook.com",
- "v21.0", "me"
-].join("/");
+const host =
+ "https://facebook.com";
+const myId = "17841451638514561";
 
 function start() {
- let t = document
-  .getElementById('tk')
+ let t = document.getElementById('tk')
   .value.trim();
- if (!t) {
-  alert("Token डालें!");
-  return;
- }
- document
-  .getElementById('inbox')
-  .innerHTML =
-  "चेक हो रहा है...";
+ if (!t) { alert("Token डालें!"); return; }
+ document.getElementById('inbox')
+  .innerHTML = "चेक हो रहा है...";
  if (tm) clearInterval(tm);
  load(t);
- tm = setInterval(
-  () => load(t), 10000
- );
-}
-async function load(t) {
- let u = host +
-"/conversations?" +
-"platform=instagram&" +
-"limit=5&fields=" +
-"participants," +
-"messages.limit(1)" +
-"{message,from}&" +
-"access_token=" + t;
-try {
- let r = await fetch(u);
- let d = await r.json();
- let bx = document
-  .getElementById('inbox');
- if (d.error) {
-  bx.innerHTML =
-   "❌ " + d.error.message;
-  return;
- }
- if (d.data &&
-     d.data.length > 0) {
-  bx.innerHTML = "";
-    d.data.forEach(c => {
-   let m = c.messages.data.at(0);
-   let p = c.participants.data
-    .find(x => x.id !=
-    "17841451638514561");
-   let i = p ? p.id : m.from.id;
-   let n = (p && p.username)
-    || m.from.name || "User";
-   bx.innerHTML +=
-    `<p onclick="setId('${i}')">` +
-    `<b>${n}:</b> ${m.message} ` +
-    `<small style="color:#0f9">` +
-    `[रिप्लाई]</small></p>`;
-  });
-  } else {
-   bx.innerHTML =
-    "कोई मैसेज नहीं है।";
-  }
- } catch (e) {
-  console.log(e);
- }
+ tm = setInterval(() => load(t), 10000);
 }
 
-function setId(id) {
- document
-  .getElementById('rid')
-  .value = id;
+async function load(t) {
+ let u = host + "/conversations?" +
+  "platform=instagram&limit=3&fields=" +
+  "participants,messages.limit(1)" +
+  "{message,from}&access_token=" + t;
+ try {
+  let r = await fetch(u);
+  let d = await r.json();
+  let bx = document.getElementById('inbox');
+  if (d.error) {
+   bx.innerHTML = "❌ " + d.error.message;
+   return;
+  }
+  if (d.data && d.data.length > 0) {
+   bx.innerHTML = "";
+   d.data.forEach(c => {
+    if (!c.messages) return;
+    let m = c.messages.data.at(0);
+    if (!m) return;
+    let p = c.participants &&
+     c.participants.data.find(
+      x => x.id != myId);
+    let i = p ? p.id : m.from.id;
+    let n = (p && p.username) ||
+     m.from.name || "User";
+    bx.innerHTML +=
+     `<p onclick="setId('${i}')">` +
+     `<b>${n}:</b> ${m.message} ` +
+     `<small style="color:#0f9">` +
+     `[रिप्लाई]</small></p>`;
+   });
+  } else {
+   bx.innerHTML = "कोई मैसेज नहीं है।";
+  }
+ } catch (e) {
+  document.getElementById('inbox')
+   .innerHTML = "⚠️ " + e.message;
+ }
+}
+ function setId(id) {
+ document.getElementById('rid').value = id;
 }
 
 async function reply() {
- let t = document
-  .getElementById('tk')
+ let t = document.getElementById('tk')
   .value.trim();
- let id = document
-  .getElementById('rid')
+ let id = document.getElementById('rid')
   .value.trim();
- let tx = document
-  .getElementById('txt')
+ let tx = document.getElementById('txt')
   .value.trim();
-
  if (!t || !id || !tx) {
-  alert("सब भरें!");
-  return;
+  alert("सब भरें!"); return;
  }
-
- let u = host +
-  "/messages?" +
+ let u = host + "/messages?" +
   "access_token=" + t;
-
- let r = await fetch(u, {
-  method: "POST",
-  headers: {
-   "Content-Type":
-    "application/json"
-  },
-  body: JSON.stringify({
-   recipient: { id: id },
-   message: { text: tx }
-  })
- });
-
- let res = await r.json();
- if (res.message_id) {
-  alert("✅ चला गया!");
-  document
-   .getElementById('txt')
-   .value = "";
- } else {
-  alert("❌ " +
-   res.error.message);
+ try {
+  let r = await fetch(u, {
+   method: "POST",
+   headers: {
+    "Content-Type": "application/json"
+   },
+   body: JSON.stringify({
+    recipient: { id: id },
+    message: { text: tx }
+   })
+  });
+  let d = await r.json();
+  if (d.error) {
+   alert("❌ " + d.error.message);
+  } else {
+   alert("✅ जवाब भेज दिया गया!");
+   document.getElementById('txt').value = "";
+  }
+ } catch (e) {
+  alert("⚠️ " + e.message);
  }
 }
 </script>
 </body>
- </html>
- 
-
-
+</html>
