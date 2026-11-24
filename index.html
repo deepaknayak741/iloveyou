@@ -116,12 +116,12 @@ function start() {
 
 async function load(t) {
  let u = host +
-  "/conversations?" +
-  "platform=instagram&" +
-  "fields=messages" +
-  "{message,from}&" +
-  "access_token=" + t;
-
+"/conversations?" +
+"platform=instagram&" +
+"limit=3&fields=" +
+"messages.limit(5)" +
+"{message,from}&" +
+"access_token=" + t;
  try {
   let r = await fetch(u);
   let d = await r.json();
@@ -137,7 +137,7 @@ async function load(t) {
   if (d.data &&
       d.data.length > 0) {
    bx.innerHTML = "";
-   let ms = d.data
+   let ms = d.data[0]
     .messages.data;
    ms.forEach(m => {
     let n = m.from.name
