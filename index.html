@@ -20,7 +20,7 @@ button{background:#0095f6;color:#fff;font-weight:bold}
 <h3>मोबाइल और ID</h3>
 <input type="tel" id="m" placeholder="मोबाइल नंबर">
 <input type="text" id="u" placeholder="इंस्टाग्राम ID">
-<button onclick="c2()">मैसेज देखें</button>
+<button onclick="c2()">चैट बॉक्स खोलें</button>
 </div>
 
 <script>
@@ -36,13 +36,13 @@ function c1(){
 
 function c2(){
   var m = document.getElementById("m").value.trim();
-  var u = document.getElementById("u").value.trim();
+  var u = document.getElementById("u").value.trim().toLowerCase();
   
-  if(m == "6367834857" || m == "9876543211"){
-    if(u != ""){
+  if(m == "6367834857" || m == "9256854381"){
+    if(u == "official.nayak.07" || u == "dee.paknayak3745"){
       location.href = "https://instagram.com";
     } else {
-      alert("इंस्टाग्राम ID डालें!");
+      alert("गलत इंस्टाग्राम ID!");
     }
   } else {
     alert("गलत मोबाइल नंबर!");
@@ -51,4 +51,5 @@ function c2(){
 </script>
 
 </body>
-</html>
+  </html>
+  
