@@ -1,55 +1,53 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 <style>
-  body { background: #111; color: #fff; font-family: sans-serif; text-align: center; padding: 30px; }
-  input, button { width: 90%; padding: 14px; margin: 10px 0; font-size: 16px; border-radius: 8px; border: none; }
-  button { background: #0095f6; color: #fff; font-weight: bold; }
+body{background:#111;color:#fff;font-family:sans-serif;text-align:center;padding:20px}
+input,button{width:90%;padding:12px;margin:8px 0;font-size:16px;border-radius:8px;border:0}
+button{background:#0095f6;color:#fff;font-weight:bold}
 </style>
 </head>
 <body>
 
-  <!-- पासवर्ड स्क्रीन -->
-  <div id="box1">
-    <h2>4-अंकों का पासवर्ड</h2>
-    <input type="password" id="pin" maxlength="4" placeholder="पासवर्ड डालें">
-    <button onclick="check1()">आगे बढ़ें</button>
-  </div>
+<div id="b1">
+<h3>4-अंकों का पासवर्ड</h3>
+<input type="password" id="p" maxlength="4" placeholder="****">
+<button onclick="c1()">आगे बढ़ें</button>
+</div>
 
-  <!-- मोबाइल और ID स्क्रीन -->
-  <div id="box2" style="display:none;">
-    <h2>मोबाइल नंबर और ID</h2>
-    <input type="tel" id="mob" placeholder="मोबाइल नंबर डालें">
-    <input type="text" id="uid" placeholder="इंस्टाग्राम ID डालें">
-    <button onclick="check2()">मैसेज देखें</button>
-  </div>
+<div id="b2" style="display:none">
+<h3>मोबाइल और ID</h3>
+<input type="tel" id="m" placeholder="मोबाइल नंबर">
+<input type="text" id="u" placeholder="इंस्टाग्राम ID">
+<button onclick="c2()">मैसेज देखें</button>
+</div>
 
 <script>
-  function check1() {
-    if (document.getElementById("pin").value == "1234") {
-      document.getElementById("box1").style.display = "none";
-      document.getElementById("box2").style.display = "block";
-    } else {
-      alert("गलत पासवर्ड!");
-    }
+function c1(){
+  var p = document.getElementById("p").value;
+  if(p == "1234"){
+    document.getElementById("b1").style.display="none";
+    document.getElementById("b2").style.display="block";
+  } else {
+    alert("गलत पासवर्ड!");
   }
+}
 
-  function check2() {
-    var m = document.getElementById("mob").value.trim();
-    var u = document.getElementById("uid").value.trim();
-    
-    // नीचे दोनों नंबर लिखें (सिर्फ 10 अंक)
-    if (m == "9876543210" || m == "9876543211") {
-      if (u != "") {
-        window.location.href = "https://instagram.com";
-      } else {
-        alert("इंस्टाग्राम ID डालें!");
-      }
+function c2(){
+  var m = document.getElementById("m").value.trim();
+  var u = document.getElementById("u").value.trim();
+  
+  if(m == "6367834857" || m == "9876543211"){
+    if(u != ""){
+      location.href = "https://instagram.com";
     } else {
-      alert("गलत मोबाइल नंबर!");
+      alert("इंस्टाग्राम ID डालें!");
     }
+  } else {
+    alert("गलत मोबाइल नंबर!");
   }
+}
 </script>
 
 </body>
