@@ -1,146 +1,73 @@
 <!DOCTYPE html>
-<html>
-<head>
 <meta name="viewport"
  content="width=device-width">
-</head>
 <body style="background:#111;
- color:#fff;font-family:sans-serif;
- padding:15px">
-
-<h3>📸 Insta Live</h3>
-
-<input id="tk"
- placeholder="Page Token डालें"
- style="width:100%;padding:10px;
- margin:5px 0">
-
-<button onclick="go()"
- style="width:100%;padding:10px;
- background:#e91e63;color:#fff;
- border:0">
+ color:#fff">
+<input id="t"
+ placeholder="Page Token"><br>
+<button onclick="go()">
  📡 मैसेज देखें
 </button>
-
-<div id="bx"
- style="background:#222;
- padding:10px;margin:10px 0;
- min-height:120px">
- यहाँ मैसेज आएंगे...
-</div>
-
-<input id="id"
- placeholder="रिप्लाई ID"
- style="width:100%;padding:10px;
- margin:5px 0">
-
-<input id="tx"
- placeholder="जवाब लिखें..."
- style="width:100%;padding:10px;
- margin:5px 0">
-
-<button onclick="snd()"
- style="width:100%;padding:10px;
- background:#00c853;color:#fff;
- border:0">
- 📤 जवाब भेजें
+<div id="b"></div>
+<input id="i"
+ placeholder="रिप्लाई ID"><br>
+<input id="x"
+ placeholder="जवाब लिखें"><br>
+<button onclick="sn()">
+ 📤 भेजें
 </button>
-
 <script>
 const H =
  "https://facebook.com" +
- "/v21.0/me";
-const ME = "17841451638514561";
-
+ "/v19.0/me";
 async function go() {
- let t = document
-  .getElementById('tk')
-  .value.trim();
- let b = document
-  .getElementById('bx');
- if (!t) return alert("Token डालें");
- b.innerHTML = "लोड हो रहा है...";
  let u = H + "/conversations?" +
   "platform=instagram&limit=3&" +
   "fields=participants," +
   "messages.limit(1)" +
-  "{message,from}&access_token=" +
-  encodeURIComponent(t);
- try {
-  let r = await fetch(u);
-  let d = await r.json();
-  if (d.error) {
-   b.innerHTML =
-    "❌ " + d.error.message;
-   return;
-  }
-  b.innerHTML = "";
-  d.data.forEach(c => {
-   let m = c.messages &&
-    c.messages.data.at(0);
-   if (!m) return;
-   let p = c.participants &&
-    c.participants.data.find(
-     x => x.id != ME);
-   let i = p ? p.id : m.from.id;
-   let n = (p && p.username) ||
-    m.from.name || "User";
-   b.innerHTML +=
-    `<p onclick="set('${i}')">` +
-    `<b>${n}:</b> ${m.message} ` +
-    `<u>[रिप्लाई]</u></p>`;
-  });
- } catch (e) {
-  b.innerHTML = "⚠️ " + e.message;
+  "{message,from}&" +
+  "access_token=" +
+  t.value.trim();
+ let r = await fetch(u);
+ let d = await r.json();
+ if (d.error) {
+  b.innerHTML =
+   d.error.message;
+  return;
  }
+ b.innerHTML = d.data.map(c => {
+  let m = c.messages.data.at(0);
+  let p = c.participants.data
+   .find(k =>
+    k.id != "17841451638514561"
+   );
+  let uid = p ? p.id : m.from.id;
+  let nm = (p && p.username)
+   || "User";
+  return `<p onclick=` +
+   `"i.value='${uid}'">` +
+   `<b>${nm}:</b> ` +
+   `${m.message} ` +
+   `<u>[रिप्लाई]</u></p>`;
+ }).join("");
 }
-
-function set(i) {
- document.getElementById('id')
-  .value = i;
-}
-
-async function snd() {
- let t = document
-  .getElementById('tk')
-  .value.trim();
- let i = document
-  .getElementById('id')
-  .value.trim();
- let x = document
-  .getElementById('tx')
-  .value.trim();
- if (!t || !i || !x) {
-  return alert("सब भरें");
- }
+async function sn() {
  let u = H + "/messages?" +
   "access_token=" +
-  encodeURIComponent(t);
- try {
-  let r = await fetch(u, {
-   method: "POST",
-   headers: {
-    "Content-Type":
-     "application/json"
-   },
-   body: JSON.stringify({
-    recipient: { id: i },
-    message: { text: x }
-   })
-  });
-  let d = await r.json();
-  if (d.error) {
-   alert("❌ " + d.error.message);
-  } else {
-   alert("✅ चला गया!");
-   document.getElementById('tx')
-    .value = "";
-  }
- } catch (e) {
-  alert("⚠️ " + e.message);
- }
+  t.value.trim();
+ let r = await fetch(u, {
+  method: "POST",
+  headers: {
+   "Content-Type":
+    "application/json"
+  },
+  body: JSON.stringify({
+   recipient: { id: i.value },
+   message: { text: x.value }
+  })
+ });
+ let d = await r.json();
+ alert(d.error ?
+  d.error.message : "✅ गया!");
 }
 </script>
-</body>
- </html>
- 
