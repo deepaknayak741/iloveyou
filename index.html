@@ -136,8 +136,8 @@ try {
  if (d.data &&
      d.data.length > 0) {
   bx.innerHTML = "";
-  d.data.forEach(c => {
-   let m = c.messages.data[0];
+    d.data.forEach(c => {
+   let m = c.messages.data.at(0);
    let p = c.participants.data
     .find(x => x.id !=
     "17841451638514561");
@@ -149,6 +149,7 @@ try {
     `<b>${n}:</b> ${m.message} ` +
     `<small style="color:#0f9">` +
     `[रिप्लाई]</small></p>`;
+  });
   });
  } 
   } else {
