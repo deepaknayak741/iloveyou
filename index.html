@@ -118,38 +118,39 @@ async function load(t) {
  let u = host +
 "/conversations?" +
 "platform=instagram&" +
-"limit=1&fields=" +
-"messages.limit(10)" +
+"limit=5&fields=" +
+"participants," +
+"messages.limit(1)" +
 "{message,from}&" +
 "access_token=" + t;
- try {
-  let r = await fetch(u);
-  let d = await r.json();
-  let bx = document
-   .getElementById('inbox');
-
-  if (d.error) {
-   bx.innerHTML =
-    "❌ " + d.error.message;
-   return;
-  }
-
-  if (d.data &&
-      d.data.length > 0) {
-   bx.innerHTML = "";
-   let ms = d.data[0]
-    .messages.data;
-   ms.forEach(m => {
-    let i = m.from.id;
-if (i != "17841451638514561") { 
- let n = m.from.username
-  || m.from.name || "User";
- bx.innerHTML +=
-  `<p onclick="setId('${i}')">` +
-  `<b>${n}:</b> ${m.message} ` +
-  `<small style="color:#0f9">` +
-  `[रिप्लाई]</small></p>`;
+try {
+ let r = await fetch(u);
+ let d = await r.json();
+ let bx = document
+  .getElementById('inbox');
+ if (d.error) {
+  bx.innerHTML =
+   "❌ " + d.error.message;
+  return;
  }
+ if (d.data &&
+     d.data.length > 0) {
+  bx.innerHTML = "";
+  d.data.forEach(c => {
+   let m = c.messages.data[0];
+   let p = c.participants.data
+    .find(x => x.id !=
+    "17841451638514561");
+   let i = p ? p.id : m.from.id;
+   let n = (p && p.username)
+    || m.from.name || "User";
+   bx.innerHTML +=
+    `<p onclick="setId('${i}')">` +
+    `<b>${n}:</b> ${m.message} ` +
+    `<small style="color:#0f9">` +
+    `[रिप्लाई]</small></p>`;
+  });
+ } 
   } else {
    bx.innerHTML =
     "कोई मैसेज नहीं है।";
