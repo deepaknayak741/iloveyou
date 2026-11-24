@@ -1,15 +1,40 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Private Chat</title>
+<style>
+  body { font-family: sans-serif; background: #121212; color: white; text-align: center; padding: 20px; }
+  .box { background: #1e1e1e; padding: 20px; border-radius: 10px; max-width: 350px; margin: 40px auto; }
+  input { width: 90%; padding: 12px; margin: 10px 0; border-radius: 5px; border: none; font-size: 16px; }
+  button { width: 95%; padding: 12px; background: #0095f6; color: white; border: none; border-radius: 5px; font-size: 16px; font-weight: bold; }
+  .hidden { display: none; }
+</style>
+</head>
+<body>
+
+  <!-- पहला ताला: 4 अंकों का पासवर्ड -->
+  <div id="step1" class="box">
+    <h2>सुरक्षा लॉक</h2>
+    <p>4 अंकों का पासवर्ड डालें</p>
+    <input type="password" id="pinInput" maxlength="4" placeholder="****">
+    <button onclick="checkPin()">आगे बढ़ें</button>
+  </div>
+
   <!-- दूसरा ताला: मोबाइल नंबर और इंस्टाग्राम ID -->
   <div id="step2" class="box hidden">
     <h2>अकाउंट वेरिफिकेशन</h2>
-    <input type="number" id="mobileInput" placeholder="अपना मोबाइल नंबर डालें">
-    <input type="text" id="instaIdInput" placeholder="इंस्टाग्राम ID डालें (जैसे @rahul)">
+    <input type="number" id="mobileInput" placeholder="दोनों में से कोई भी नंबर डालें">
+    <input type="text" id="instaIdInput" placeholder="इंस्टाग्राम ID डालें">
     <button onclick="openInbox()">मैसेज देखें</button>
   </div>
 
 <script>
-  // यहाँ अपना 4-अंकों का पासवर्ड और मोबाइल नंबर सेट करें
+  // यहाँ अपना 4-अंकों का पासवर्ड और दोनों मोबाइल नंबर लिखें
   const MY_PIN = "1234"; 
-  const MY_MOBILE = "9876543210";
+  const MY_MOBILE_1 = "9876543210";
+  const MY_MOBILE_2 = "9876543211";
 
   function checkPin() {
     var enteredPin = document.getElementById("pinInput").value;
@@ -22,10 +47,10 @@
   }
 
   function openInbox() {
-    var enteredMobile = document.getElementById("mobileInput").value;
+    var enteredMobile = document.getElementById("mobileInput").value.trim();
     var instaId = document.getElementById("instaIdInput").value.trim();
 
-    if (enteredMobile !== MY_MOBILE) {
+    if (enteredMobile !== MY_MOBILE_1 && enteredMobile !== MY_MOBILE_2) {
       alert("गलत मोबाइल नंबर!");
       return;
     }
@@ -34,7 +59,6 @@
       return;
     }
 
-    // सही नंबर और ID डालने पर सीधा हल्का इंस्टाग्राम इनबॉक्स खुलेगा
     window.location.href = "https://instagram.com";
   }
 </script>
