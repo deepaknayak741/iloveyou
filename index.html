@@ -1,73 +1,43 @@
-<!DOCTYPE html>
-<meta name="viewport"
- content="width=device-width">
-<body style="background:#111;
- color:#fff">
-<input id="t"
- placeholder="Page Token"><br>
-<button onclick="go()">
- 📡 मैसेज देखें
-</button>
-<div id="b"></div>
-<input id="i"
- placeholder="रिप्लाई ID"><br>
-<input id="x"
- placeholder="जवाब लिखें"><br>
-<button onclick="sn()">
- 📤 भेजें
-</button>
+  <!-- दूसरा ताला: मोबाइल नंबर और इंस्टाग्राम ID -->
+  <div id="step2" class="box hidden">
+    <h2>अकाउंट वेरिफिकेशन</h2>
+    <input type="number" id="mobileInput" placeholder="अपना मोबाइल नंबर डालें">
+    <input type="text" id="instaIdInput" placeholder="इंस्टाग्राम ID डालें (जैसे @rahul)">
+    <button onclick="openInbox()">मैसेज देखें</button>
+  </div>
+
 <script>
-const H =
- "https://facebook.com" +
- "/v19.0/me";
-async function go() {
- let u = H + "/conversations?" +
-  "platform=instagram&limit=3&" +
-  "fields=participants," +
-  "messages.limit(1)" +
-  "{message,from}&" +
-  "access_token=" +
-  t.value.trim();
- let r = await fetch(u);
- let d = await r.json();
- if (d.error) {
-  b.innerHTML =
-   d.error.message;
-  return;
- }
- b.innerHTML = d.data.map(c => {
-  let m = c.messages.data.at(0);
-  let p = c.participants.data
-   .find(k =>
-    k.id != "17841451638514561"
-   );
-  let uid = p ? p.id : m.from.id;
-  let nm = (p && p.username)
-   || "User";
-  return `<p onclick=` +
-   `"i.value='${uid}'">` +
-   `<b>${nm}:</b> ` +
-   `${m.message} ` +
-   `<u>[रिप्लाई]</u></p>`;
- }).join("");
-}
-async function sn() {
- let u = H + "/messages?" +
-  "access_token=" +
-  t.value.trim();
- let r = await fetch(u, {
-  method: "POST",
-  headers: {
-   "Content-Type":
-    "application/json"
-  },
-  body: JSON.stringify({
-   recipient: { id: i.value },
-   message: { text: x.value }
-  })
- });
- let d = await r.json();
- alert(d.error ?
-  d.error.message : "✅ गया!");
-}
+  // यहाँ अपना 4-अंकों का पासवर्ड और मोबाइल नंबर सेट करें
+  const MY_PIN = "1234"; 
+  const MY_MOBILE = "9876543210";
+
+  function checkPin() {
+    var enteredPin = document.getElementById("pinInput").value;
+    if (enteredPin === MY_PIN) {
+      document.getElementById("step1").classList.add("hidden");
+      document.getElementById("step2").classList.remove("hidden");
+    } else {
+      alert("गलत पासवर्ड! सही 4-अंकों का पिन डालें।");
+    }
+  }
+
+  function openInbox() {
+    var enteredMobile = document.getElementById("mobileInput").value;
+    var instaId = document.getElementById("instaIdInput").value.trim();
+
+    if (enteredMobile !== MY_MOBILE) {
+      alert("गलत मोबाइल नंबर!");
+      return;
+    }
+    if (instaId === "") {
+      alert("कृपया अपनी इंस्टाग्राम ID लिखें!");
+      return;
+    }
+
+    // सही नंबर और ID डालने पर सीधा हल्का इंस्टाग्राम इनबॉक्स खुलेगा
+    window.location.href = "https://instagram.com";
+  }
 </script>
+
+</body>
+</html>
