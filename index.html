@@ -21,7 +21,7 @@
             box-shadow: 0 4px 20px rgba(0,0,0,0.4);
         }
         h2 { text-align: center; color: #38bdf8; margin-top: 0; }
-        input[type="password"], textarea {
+        input[type="text"], textarea {
             width: 100%;
             padding: 12px;
             border-radius: 8px;
@@ -80,7 +80,8 @@
 <div class="box">
     <h2>🚀 मेरा खुद का AI कोड जनरेटर</h2>
     
-    <input type="password" id="apiKeyInput" placeholder="यहाँ अपनी Gemini API Key पेस्ट करें (AIza...)">
+    <!-- यहाँ type="text" रखा है ताकि आप खुद देख सकें कि सही Key (AIza...) डली है या नहीं -->
+    <input type="text" id="apiKeyInput" placeholder="यहाँ अपनी Gemini API Key पेस्ट करें (AIza...)">
     
     <textarea id="userInput" placeholder="यहाँ लिखें क्या बनवाना है... (जैसे: मुझे एडमिन पैनल का कोड बना के दो)"></textarea>
     
@@ -99,7 +100,7 @@
 <script>
     window.onload = function() {
         try {
-            const savedKey = localStorage.getItem("gemini_api_key");
+            const savedKey = localStorage.getItem("gemini_api_key_v2");
             if (savedKey) {
                 document.getElementById("apiKeyInput").value = savedKey;
             }
@@ -107,7 +108,7 @@
     };
 
     async function buildCode() {
-        const apiKey = document.getElementById("apiKeyInput").value.trim();
+        const apiKey = document.getElementById("apiKeyInput").value.replace(/\s+/g, '');
         const prompt = document.getElementById("userInput").value.trim();
         const codeDisplay = document.getElementById("codeDisplay");
         const previewFrame = document.getElementById("previewFrame");
@@ -117,20 +118,24 @@
             alert("कृपया पहले ऊपर अपनी Gemini API Key डालें!");
             return;
         }
+        if (!apiKey.startsWith("AIza")) {
+            alert("ध्यान दें! आपकी API Key गलत लग रही है। Google Gemini की Key हमेशा 'AIza' से शुरू होती है।");
+            return;
+        }
         if (!prompt) {
             alert("पहले लिखें कि आपको क्या बनाना है!");
             return;
         }
 
         try {
-            localStorage.setItem("gemini_api_key", apiKey);
+            localStorage.setItem("gemini_api_key_v2", apiKey);
         } catch (e) {}
 
         codeDisplay.innerText = "AI आपका कोड बना रहा है, कृपया 5-10 सेकंड रुकें... ⏳";
         copyBtn.style.display = "none";
         previewFrame.srcdoc = "";
 
-        const url = "https://googleapis.com" + encodeURIComponent(apiKey);
+        const url = "https://googleapis.com" + apiKey;
 
         try {
             const response = await fetch(url, {
@@ -139,7 +144,7 @@
                 body: JSON.stringify({
                     contents: [{
                         parts: [{ 
-                            text: "You are an expert web developer. Create a complete, working, single-file HTML code with embedded CSS and JavaScript for the following user request. Make the UI modern and clean. IMPORTANT: Output ONLY the raw HTML code starting with <!DOCTYPE html>. Do NOT wrap it in markdown backticks (```html) and do NOT add any explanation before or after the code. User request: " + prompt 
+                            text: "Create a complete, working, single-file HTML code with embedded CSS and JavaScript for the following request. Output ONLY raw HTML code starting with <!DOCTYPE html>, no markdown backticks, no explanation: " + prompt 
                         }]
                     }]
                 })
@@ -148,23 +153,23 @@
             const data = await response.json();
 
             if (!response.ok) {
-                codeDisplay.innerText = "API एरर (" + response.status + "): " + (data.error ? data.error.message : "कृपया अपनी API Key जांचें");
+                codeDisplay.innerText = "Google API एरर (" + response.status + "):\n" + (data.error ? data.error.message : "कृपया नई API Key बनाएं");
                 return;
             }
 
             if (data.candidates && data.candidates.length > 0) {
-                let rawCode = data.candidates[0].content.parts[0].text;
+                let rawCode = data.candidates.at(0).content.parts.at(0).text;
                 rawCode = rawCode.replace(/```html/gi, "").replace(/```/g, "").trim();
 
                 codeDisplay.innerText = rawCode;
                 copyBtn.style.display = "block";
                 previewFrame.srcdoc = rawCode;
             } else {
-                codeDisplay.innerText = "AI से कोई जवाब नहीं मिला। कृपया दोबारा कोशिश करें।";
+                codeDisplay.innerText = "AI से कोई जवाब नहीं मिला। दोबारा कोशिश करें।";
             }
 
         } catch (error) {
-            codeDisplay.innerText = "नेटवर्क एरर: " + error.message + "\n\nसंभावित कारण:\n1. आपके इंटरनेट या मोबाइल नेटवर्क में Google API ब्लॉक है (VPN या अलग नेटवर्क पर चेक करें)।\n2. API Key में कोई गलत अक्षर या स्पेस है।";
+            codeDisplay.innerText = "नेटवर्क एरर: " + error.message + "\n\nकृपया VPN बंद करके या Wi-Fi से कनेक्ट करके दोबारा कोशिश करें।";
         }
     }
 
@@ -176,5 +181,4 @@
 </script>
 
 </body>
-    </html>
-    
+</html>
