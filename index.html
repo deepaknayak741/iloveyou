@@ -1,55 +1,168 @@
 <!DOCTYPE html>
-<html>
+<html lang="hi">
 <head>
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<style>
-body{background:#111;color:#fff;font-family:sans-serif;text-align:center;padding:20px}
-input,button{width:90%;padding:12px;margin:8px 0;font-size:16px;border-radius:8px;border:0}
-button{background:#0095f6;color:#fff;font-weight:bold}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>मेरा AI कोड जनरेटर</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background-color: #0f172a;
+            color: white;
+            margin: 0;
+            padding: 15px;
+        }
+        .box {
+            max-width: 800px;
+            margin: auto;
+            background: #1e293b;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+        }
+        h2 { text-align: center; color: #38bdf8; margin-top: 0; }
+        input[type="password"], textarea {
+            width: 100%;
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid #334155;
+            background: #0f172a;
+            color: #fff;
+            font-size: 15px;
+            box-sizing: border-box;
+            margin-bottom: 10px;
+        }
+        textarea { height: 90px; }
+        .btn-group {
+            display: flex;
+            gap: 10px;
+        }
+        button {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .gen-btn { background: #38bdf8; color: #000; }
+        .copy-btn { background: #22c55e; color: #fff; display: none; }
+        .section-title {
+            margin-top: 20px;
+            font-weight: bold;
+            color: #94a3b8;
+            border-bottom: 1px solid #334155;
+            padding-bottom: 5px;
+        }
+        iframe {
+            width: 100%;
+            height: 300px;
+            background: white;
+            border: none;
+            border-radius: 8px;
+            margin-top: 10px;
+        }
+        pre {
+            background: #0f172a;
+            color: #4ade80;
+            padding: 15px;
+            border-radius: 8px;
+            overflow-x: auto;
+            white-space: pre-wrap;
+            max-height: 250px;
+            font-size: 14px;
+        }
+    </style>
 </head>
 <body>
 
-<div id="b1">
-<h3>4-अंकों का पासवर्ड</h3>
-<input type="password" id="p" maxlength="4" placeholder="****">
-<button onclick="c1()">आगे बढ़ें</button>
-</div>
+<div class="box">
+    <h2>🚀 कोई भी कोड खुद बनाएं</h2>
+    
+    <!-- API Key डालने की सुरक्षित जगह -->
+    <input type="password" id="apiKeyInput" placeholder="यहाँ अपनी Gemini API Key पेस्ट करें (एक बार सेव हो जाएगी)">
+    
+    <textarea id="userInput" placeholder="जो बनवाना हो यहाँ लिखें... (जैसे: एक कैलकुलेटर बनाओ, या एडमिन पैनल बनाओ)"></textarea>
+    
+    <div class="btn-group">
+        <button class="gen-btn" onclick="buildCode()">कोड बनाएं और चलाएं</button>
+        <button id="copyBtn" class="copy-btn" onclick="copyCode()">कोड कॉपी करें</button>
+    </div>
 
-<div id="b2" style="display:none">
-<h3>मोबाइल और ID</h3>
-<input type="tel" id="m" placeholder="मोबाइल नंबर">
-<input type="text" id="u" placeholder="इंस्टाग्राम ID">
-<button onclick="c2()">चैट बॉक्स खोलें</button>
+    <div class="section-title">📱 लाइव प्रिव्यू (आपकी ऐप ऐसी दिखेगी):</div>
+    <iframe id="previewFrame"></iframe>
+
+    <div class="section-title">💻 आपका तैयार कोड:</div>
+    <pre id="codeDisplay">यहाँ कोड दिखाई देगा...</pre>
 </div>
 
 <script>
-function c1(){
-  var p = document.getElementById("p").value;
-  if(p == "1234"){
-    document.getElementById("b1").style.display="none";
-    document.getElementById("b2").style.display="block";
-  } else {
-    alert("गलत पासवर्ड!");
-  }
-}
+    // पेज खुलते ही पहले से सेव की गई API Key लोड करना
+    window.onload = function() {
+        const savedKey = localStorage.getItem("gemini_api_key");
+        if (savedKey) {
+            document.getElementById("apiKeyInput").value = savedKey;
+        }
+    };
 
-function c2(){
-  var m = document.getElementById("m").value.trim();
-  var u = document.getElementById("u").value.trim().toLowerCase();
-  
-  if(m == "6367834857" || m == "9256854381"){
-    if(u == "official.nayak.07" || u == "dee.paknayak3745"){
-      location.href = "https://instagram.com";
-    } else {
-      alert("गलत इंस्टाग्राम ID!");
+    async function buildCode() {
+        const apiKey = document.getElementById("apiKeyInput").value.trim();
+        const prompt = document.getElementById("userInput").value.trim();
+        const codeDisplay = document.getElementById("codeDisplay");
+        const previewFrame = document.getElementById("previewFrame");
+        const copyBtn = document.getElementById("copyBtn");
+
+        if (!apiKey) {
+            alert("कृपया पहले ऊपर वाले बॉक्स में अपनी Gemini API Key डालें!");
+            return;
+        }
+        if (!prompt) {
+            alert("पहले लिखें कि आपको क्या बनाना है!");
+            return;
+        }
+
+        // API Key को आपके ब्राउज़र में सुरक्षित सेव करना
+        localStorage.setItem("gemini_api_key", apiKey);
+
+        codeDisplay.innerText = "आपका कोड तैयार हो रहा है... ⏳";
+        copyBtn.style.display = "none";
+
+        const url = `https://googleapis.com{apiKey}`;
+
+        try {
+            const response = await fetch(url, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    contents: [{
+                        parts: [{ 
+                            text: "Create a complete single-file HTML/CSS/JS code for this request. Do not use markdown backticks or explanations, give ONLY raw HTML code so it can run directly in an iframe: " + prompt 
+                        }]
+                    }]
+                })
+            });
+
+            const data = await response.json();
+            let rawCode = data.candidates[0].content.parts[0].text;
+            
+            rawCode = rawCode.replace(/```html/g, "").replace(/```/g, "").trim();
+
+            codeDisplay.innerText = rawCode;
+            copyBtn.style.display = "block";
+            previewFrame.srcdoc = rawCode;
+
+        } catch (error) {
+            codeDisplay.innerText = "गड़बड़ हुई! कृपया चेक करें कि आपकी API Key सही है और इंटरनेट चल रहा है।";
+        }
     }
-  } else {
-    alert("गलत मोबाइल नंबर!");
-  }
-}
+
+    function copyCode() {
+        const code = document.getElementById("codeDisplay").innerText;
+        navigator.clipboard.writeText(code);
+        alert("पूरा कोड कॉपी हो गया है!");
+    }
 </script>
 
 </body>
-  </html>
-  
+</html>
