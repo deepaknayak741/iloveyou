@@ -1,183 +1,27 @@
-<!DOCTYPE html>
-<html lang="hi">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>मेरा AI कोड जनरेटर</title>
-    <style>
-        body {
-            font-family: 'Segoe UI', sans-serif;
-            background-color: #0f172a;
-            color: white;
-            margin: 0;
-            padding: 15px;
-        }
-        .box {
-            max-width: 800px;
-            margin: auto;
-            background: #1e293b;
-            padding: 20px;
-            border-radius: 12px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.4);
-        }
-        h2 { text-align: center; color: #38bdf8; margin-top: 0; }
-        input[type="text"], textarea {
-            width: 100%;
-            padding: 12px;
-            border-radius: 8px;
-            border: 1px solid #334155;
-            background: #0f172a;
-            color: #fff;
-            font-size: 15px;
-            box-sizing: border-box;
-            margin-bottom: 10px;
-        }
-        textarea { height: 100px; }
-        .btn-group {
-            display: flex;
-            gap: 10px;
-        }
-        button {
-            flex: 1;
-            padding: 12px;
-            border: none;
-            border-radius: 8px;
-            font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
-        }
-        .gen-btn { background: #38bdf8; color: #000; }
-        .copy-btn { background: #22c55e; color: #fff; display: none; }
-        .section-title {
-            margin-top: 20px;
-            font-weight: bold;
-            color: #94a3b8;
-            border-bottom: 1px solid #334155;
-            padding-bottom: 5px;
-        }
-        iframe {
-            width: 100%;
-            height: 350px;
-            background: white;
-            border: none;
-            border-radius: 8px;
-            margin-top: 10px;
-        }
-        pre {
-            background: #0f172a;
-            color: #4ade80;
-            padding: 15px;
-            border-radius: 8px;
-            overflow-x: auto;
-            white-space: pre-wrap;
-            max-height: 300px;
-            font-size: 13px;
-        }
-    </style>
-</head>
-<body>
+async function generateCode() {
+  const apiKey = document.getElementById("apiKeyInput").value; // आपकी API Key वाला बॉक्स
+  const userPrompt = document.getElementById("promptInput").value; // यूजर का सवाल वाला बॉक्स
+  const previewBox = document.getElementById("previewBox"); // नीचे वाला सफेद बॉक्स
 
-<div class="box">
-    <h2>🚀 मेरा खुद का AI कोड जनरेटर</h2>
-    
-    <input type="text" id="apiKeyInput" placeholder="यहाँ अपनी Gemini API Key पेस्ट करें">
-    
-    <textarea id="userInput" placeholder="यहाँ लिखें क्या बनवाना है... (जैसे: मुझे एडमिन पैनल का कोड बना के दो)"></textarea>
-    
-    <div class="btn-group">
-        <button type="button" class="gen-btn" onclick="buildCode()">कोड बनाएं और चलाएं</button>
-        <button type="button" id="copyBtn" class="copy-btn" onclick="copyCode()">कोड कॉपी करें</button>
-    </div>
+  previewBox.innerHTML = "AI सोच रहा है... कृपया प्रतीक्षा करें...";
 
-    <div class="section-title">📱 लाइव प्रिव्यू (ऐसा दिखेगा):</div>
-    <iframe id="previewFrame"></iframe>
+  const url = `https://googleapis.com{apiKey}`;
 
-    <div class="section-title">💻 आपका तैयार कोड:</div>
-    <pre id="codeDisplay">यहाँ कोड दिखाई देगा...</pre>
-</div>
+  const response = await fetch(url, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      contents: [{ parts: [{ text: userPrompt }] }]
+    })
+  });
 
-<script>
-    window.onload = function() {
-        try {
-            const savedKey = localStorage.getItem("gemini_api_key_v3");
-            if (savedKey) {
-                document.getElementById("apiKeyInput").value = savedKey;
-            }
-        } catch (e) {}
-    };
-
-    async function buildCode() {
-        const apiKey = document.getElementById("apiKeyInput").value.replace(/\s+/g, '');
-        const prompt = document.getElementById("userInput").value.trim();
-        const codeDisplay = document.getElementById("codeDisplay");
-        const previewFrame = document.getElementById("previewFrame");
-        const copyBtn = document.getElementById("copyBtn");
-
-        if (!apiKey) {
-            alert("कृपया पहले ऊपर अपनी Gemini API Key डालें!");
-            return;
-        }
-        if (!prompt) {
-            alert("पहले लिखें कि आपको क्या बनाना है!");
-            return;
-        }
-
-        try {
-            localStorage.setItem("gemini_api_key_v3", apiKey);
-        } catch (e) {}
-
-        codeDisplay.innerText = "AI आपका कोड बना रहा है, कृपया 5-10 सेकंड रुकें... ⏳";
-        copyBtn.style.display = "none";
-        previewFrame.srcdoc = "";
-
-        const url = "https://googleapis.com";
-
-        try {
-            const response = await fetch(url, {
-                method: "POST",
-                headers: { 
-                    "Content-Type": "application/json",
-                    "x-goog-api-key": apiKey
-                },
-                body: JSON.stringify({
-                    contents: [{
-                        parts: [{ 
-                            text: "Create a complete, working, single-file HTML code with embedded CSS and JavaScript for the following request. Output ONLY raw HTML code starting with <!DOCTYPE html>, no markdown backticks, no explanation: " + prompt 
-                        }]
-                    }]
-                })
-            });
-
-            const data = await response.json();
-
-            if (!response.ok) {
-                codeDisplay.innerText = "Google API एरर (" + response.status + "):\n" + (data.error ? data.error.message : "अज्ञात एरर");
-                return;
-            }
-
-            if (data.candidates && data.candidates.length > 0) {
-                let rawCode = data.candidates.at(0).content.parts.at(0).text;
-                rawCode = rawCode.replace(/```html/gi, "").replace(/```/g, "").trim();
-
-                codeDisplay.innerText = rawCode;
-                copyBtn.style.display = "block";
-                previewFrame.srcdoc = rawCode;
-            } else {
-                codeDisplay.innerText = "AI से कोई जवाब नहीं मिला। दोबारा कोशिश करें।";
-            }
-
-        } catch (error) {
-            codeDisplay.innerText = "नेटवर्क एरर: " + error.message;
-        }
-    }
-
-    function copyCode() {
-        const code = document.getElementById("codeDisplay").innerText;
-        navigator.clipboard.writeText(code);
-        alert("पूरा कोड कॉपी हो गया है!");
-    }
-</script>
-
-</body>
-        </html>
-        
+  const data = await response.json();
+  
+  // AI का जवाब निकालना
+  if (data.candidates) {
+    const aiReply = data.candidates[0].content.parts[0].text;
+    previewBox.innerText = aiReply; // नीचे सफेद बॉक्स में जवाब दिखाना
+  } else {
+    previewBox.innerText = "Error: कृपया अपनी API Key चेक करें!";
+  }
+}
