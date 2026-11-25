@@ -1,27 +1,43 @@
-async function generateCode() {
-  const apiKey = document.getElementById("apiKeyInput").value; // आपकी API Key वाला बॉक्स
-  const userPrompt = document.getElementById("promptInput").value; // यूजर का सवाल वाला बॉक्स
-  const previewBox = document.getElementById("previewBox"); // नीचे वाला सफेद बॉक्स
-
-  previewBox.innerHTML = "AI सोच रहा है... कृपया प्रतीक्षा करें...";
-
-  const url = `https://googleapis.com{apiKey}`;
-
-  const response = await fetch(url, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      contents: [{ parts: [{ text: userPrompt }] }]
-    })
-  });
-
-  const data = await response.json();
-  
-  // AI का जवाब निकालना
-  if (data.candidates) {
-    const aiReply = data.candidates[0].content.parts[0].text;
-    previewBox.innerText = aiReply; // नीचे सफेद बॉक्स में जवाब दिखाना
-  } else {
-    previewBox.innerText = "Error: कृपया अपनी API Key चेक करें!";
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+body { background: #0f172a; color: white; font-family: sans-serif; padding: 15px; }
+.box { background: #1e293b; padding: 15px; border-radius: 12px; }
+input, textarea { width: 100%; background: #0f172a; color: white; border: 1px solid #334155; border-radius: 8px; padding: 10px; margin: 10px 0; box-sizing: border-box; }
+button { width: 100%; background: #38bdf8; color: #0f172a; font-weight: bold; padding: 12px; border: none; border-radius: 8px; font-size: 16px; }
+#out { background: white; color: black; min-height: 220px; border-radius: 8px; padding: 12px; margin-top: 10px; white-space: pre-wrap; }
+</style>
+</head>
+<body>
+<div class="box">
+<h3>🚀 मेरा खुद का AI कोड जनरेटर</h3>
+<input type="text" id="key" placeholder="यहाँ अपनी Gemini API Key पेस्ट करें">
+<textarea id="msg" rows="4" placeholder="यहाँ अपना सवाल या कोड लिखें..."></textarea>
+<button onclick="runAI()">कोड बनाएं और चलाएं</button>
+<p>📱 लाइव प्रिव्यू (ऐसा दिखेगा):</p>
+<div id="out"></div>
+</div>
+<script>
+async function runAI() {
+  const k = document.getElementById("key").value.trim();
+  const m = document.getElementById("msg").value.trim();
+  const o = document.getElementById("out");
+  if (!k || !m) { o.innerText = "कृपया API Key और सवाल दोनों लिखें!"; return; }
+  o.innerText = "AI लिख रहा है... रुकें...";
+  try {
+    const r = await fetch("https://googleapis.com" + k, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ contents: [{ parts: [{ text: m }] }] })
+    });
+    const d = await r.json();
+    o.innerText = d.candidates ? d.candidates[0].content.parts[0].text : "गलत API Key! कृपया सही Key डालें।";
+  } catch (e) {
+    o.innerText = "इंटरनेट या API की समस्या है।";
   }
 }
+</script>
+</body>
+</html>
