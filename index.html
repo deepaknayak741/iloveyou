@@ -80,8 +80,7 @@
 <div class="box">
     <h2>🚀 मेरा खुद का AI कोड जनरेटर</h2>
     
-    <!-- यहाँ type="text" रखा है ताकि आप खुद देख सकें कि सही Key (AIza...) डली है या नहीं -->
-    <input type="text" id="apiKeyInput" placeholder="यहाँ अपनी Gemini API Key पेस्ट करें (AIza...)">
+    <input type="text" id="apiKeyInput" placeholder="यहाँ अपनी Gemini API Key पेस्ट करें">
     
     <textarea id="userInput" placeholder="यहाँ लिखें क्या बनवाना है... (जैसे: मुझे एडमिन पैनल का कोड बना के दो)"></textarea>
     
@@ -100,7 +99,7 @@
 <script>
     window.onload = function() {
         try {
-            const savedKey = localStorage.getItem("gemini_api_key_v2");
+            const savedKey = localStorage.getItem("gemini_api_key_v3");
             if (savedKey) {
                 document.getElementById("apiKeyInput").value = savedKey;
             }
@@ -118,29 +117,28 @@
             alert("कृपया पहले ऊपर अपनी Gemini API Key डालें!");
             return;
         }
-        if (!apiKey.startsWith("AIza")) {
-            alert("ध्यान दें! आपकी API Key गलत लग रही है। Google Gemini की Key हमेशा 'AIza' से शुरू होती है।");
-            return;
-        }
         if (!prompt) {
             alert("पहले लिखें कि आपको क्या बनाना है!");
             return;
         }
 
         try {
-            localStorage.setItem("gemini_api_key_v2", apiKey);
+            localStorage.setItem("gemini_api_key_v3", apiKey);
         } catch (e) {}
 
         codeDisplay.innerText = "AI आपका कोड बना रहा है, कृपया 5-10 सेकंड रुकें... ⏳";
         copyBtn.style.display = "none";
         previewFrame.srcdoc = "";
 
-        const url = "https://googleapis.com" + apiKey;
+        const url = "https://googleapis.com";
 
         try {
             const response = await fetch(url, {
                 method: "POST",
-                headers: { "Content-Type": "application/json" },
+                headers: { 
+                    "Content-Type": "application/json",
+                    "x-goog-api-key": apiKey
+                },
                 body: JSON.stringify({
                     contents: [{
                         parts: [{ 
@@ -153,7 +151,7 @@
             const data = await response.json();
 
             if (!response.ok) {
-                codeDisplay.innerText = "Google API एरर (" + response.status + "):\n" + (data.error ? data.error.message : "कृपया नई API Key बनाएं");
+                codeDisplay.innerText = "Google API एरर (" + response.status + "):\n" + (data.error ? data.error.message : "अज्ञात एरर");
                 return;
             }
 
@@ -169,7 +167,7 @@
             }
 
         } catch (error) {
-            codeDisplay.innerText = "नेटवर्क एरर: " + error.message + "\n\nकृपया VPN बंद करके या Wi-Fi से कनेक्ट करके दोबारा कोशिश करें।";
+            codeDisplay.innerText = "नेटवर्क एरर: " + error.message;
         }
     }
 
@@ -181,4 +179,5 @@
 </script>
 
 </body>
-</html>
+        </html>
+        
