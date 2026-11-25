@@ -7,7 +7,7 @@ body { background: #0f172a; color: white; font-family: sans-serif; padding: 15px
 .box { background: #1e293b; padding: 15px; border-radius: 12px; }
 input, textarea { width: 100%; background: #0f172a; color: white; border: 1px solid #334155; border-radius: 8px; padding: 10px; margin: 10px 0; box-sizing: border-box; }
 button { width: 100%; background: #38bdf8; color: #0f172a; font-weight: bold; padding: 12px; border: none; border-radius: 8px; font-size: 16px; }
-#out { background: white; color: black; min-height: 220px; border-radius: 8px; padding: 12px; margin-top: 10px; white-space: pre-wrap; }
+#out { background: white; color: black; min-height: 220px; border-radius: 8px; padding: 12px; margin-top: 10px; white-space: pre-wrap; word-wrap: break-word; }
 </style>
 </head>
 <body>
@@ -33,9 +33,15 @@ async function runAI() {
       body: JSON.stringify({ contents: [{ parts: [{ text: m }] }] })
     });
     const d = await r.json();
-    o.innerText = d.candidates ? d.candidates[0].content.parts[0].text : "गलत API Key! कृपया सही Key डालें।";
+    if (d.candidates && d.candidates.length > 0) {
+      o.innerText = d.candidates[0].content.parts[0].text;
+    } else if (d.error) {
+      o.innerText = "API Error: " + d.error.message;
+    } else {
+      o.innerText = "कोई जवाब नहीं मिला।";
+    }
   } catch (e) {
-    o.innerText = "इंटरनेट या API की समस्या है।";
+    o.innerText = "Error: " + e.message;
   }
 }
 </script>
