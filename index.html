@@ -80,14 +80,13 @@
 <div class="box">
     <h2>🚀 कोई भी कोड खुद बनाएं</h2>
     
-    <!-- API Key डालने की सुरक्षित जगह -->
-    <input type="password" id="apiKeyInput" placeholder="यहाँ अपनी Gemini API Key पेस्ट करें (एक बार सेव हो जाएगी)">
+    <input type="password" id="apiKeyInput" placeholder="यहाँ अपनी Gemini API Key पेस्ट करें">
     
-    <textarea id="userInput" placeholder="जो बनवाना हो यहाँ लिखें... (जैसे: एक कैलकुलेटर बनाओ, या एडमिन पैनल बनाओ)"></textarea>
+    <textarea id="userInput" placeholder="जो बनवाना हो यहाँ लिखें... (जैसे: एक कैलकुलेटर बनाओ)"></textarea>
     
     <div class="btn-group">
-        <button class="gen-btn" onclick="buildCode()">कोड बनाएं और चलाएं</button>
-        <button id="copyBtn" class="copy-btn" onclick="copyCode()">कोड कॉपी करें</button>
+        <button type="button" class="gen-btn" onclick="buildCode()">कोड बनाएं और चलाएं</button>
+        <button type="button" id="copyBtn" class="copy-btn" onclick="copyCode()">कोड कॉपी करें</button>
     </div>
 
     <div class="section-title">📱 लाइव प्रिव्यू (आपकी ऐप ऐसी दिखेगी):</div>
@@ -98,12 +97,13 @@
 </div>
 
 <script>
-    // पेज खुलते ही पहले से सेव की गई API Key लोड करना
     window.onload = function() {
-        const savedKey = localStorage.getItem("gemini_api_key");
-        if (savedKey) {
-            document.getElementById("apiKeyInput").value = savedKey;
-        }
+        try {
+            const savedKey = localStorage.getItem("gemini_api_key");
+            if (savedKey) {
+                document.getElementById("apiKeyInput").value = savedKey;
+            }
+        } catch (e) {}
     };
 
     async function buildCode() {
@@ -114,7 +114,7 @@
         const copyBtn = document.getElementById("copyBtn");
 
         if (!apiKey) {
-            alert("कृपया पहले ऊपर वाले बॉक्स में अपनी Gemini API Key डालें!");
+            alert("कृपया पहले अपनी Gemini API Key डालें!");
             return;
         }
         if (!prompt) {
@@ -122,12 +122,14 @@
             return;
         }
 
-        // API Key को आपके ब्राउज़र में सुरक्षित सेव करना
-        localStorage.setItem("gemini_api_key", apiKey);
+        try {
+            localStorage.setItem("gemini_api_key", apiKey);
+        } catch (e) {}
 
         codeDisplay.innerText = "आपका कोड तैयार हो रहा है... ⏳";
         copyBtn.style.display = "none";
 
+        // सही Gemini API URL
         const url = `https://googleapis.com{apiKey}`;
 
         try {
@@ -144,8 +146,13 @@
             });
 
             const data = await response.json();
+
+            if (!response.ok) {
+                codeDisplay.innerText = "API एरर: " + (data.error ? data.error.message : "अज्ञात गड़बड़");
+                return;
+            }
+
             let rawCode = data.candidates[0].content.parts[0].text;
-            
             rawCode = rawCode.replace(/```html/g, "").replace(/```/g, "").trim();
 
             codeDisplay.innerText = rawCode;
@@ -153,7 +160,7 @@
             previewFrame.srcdoc = rawCode;
 
         } catch (error) {
-            codeDisplay.innerText = "गड़बड़ हुई! कृपया चेक करें कि आपकी API Key सही है और इंटरनेट चल रहा है।";
+            codeDisplay.innerText = "नेटवर्क एरर: " + error.message;
         }
     }
 
