@@ -1,24 +1,3 @@
-<!DOCTYPE html>
-<html>
-<head>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<style>
-body { background: #0f172a; color: white; font-family: sans-serif; padding: 15px; }
-.box { background: #1e293b; padding: 15px; border-radius: 12px; }
-input, textarea { width: 100%; background: #0f172a; color: white; border: 1px solid #334155; border-radius: 8px; padding: 10px; margin: 10px 0; box-sizing: border-box; }
-button { width: 100%; background: #38bdf8; color: #0f172a; font-weight: bold; padding: 12px; border: none; border-radius: 8px; font-size: 16px; }
-#out { background: white; color: black; min-height: 220px; border-radius: 8px; padding: 12px; margin-top: 10px; white-space: pre-wrap; word-wrap: break-word; }
-</style>
-</head>
-<body>
-<div class="box">
-<h3>🚀 मेरा खुद का AI कोड जनरेटर</h3>
-<input type="text" id="key" placeholder="यहाँ अपनी Gemini API Key पेस्ट करें">
-<textarea id="msg" rows="4" placeholder="यहाँ अपना सवाल या कोड लिखें..."></textarea>
-<button onclick="runAI()">कोड बनाएं और चलाएं</button>
-<p>📱 लाइव प्रिव्यू (ऐसा दिखेगा):</p>
-<div id="out"></div>
-</div>
 <script>
 async function runAI() {
   const k = document.getElementById("key").value.trim();
@@ -27,9 +6,12 @@ async function runAI() {
   if (!k || !m) { o.innerText = "कृपया API Key और सवाल दोनों लिखें!"; return; }
   o.innerText = "AI लिख रहा है... रुकें...";
   try {
-    const r = await fetch("https://googleapis.com" + k, {
+    const r = await fetch("https://googleapis.com", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        "x-goog-api-key": k
+      },
       body: JSON.stringify({ contents: [{ parts: [{ text: m }] }] })
     });
     const d = await r.json();
