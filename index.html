@@ -4,13 +4,12 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Vanish Chat</title>
-<script src="https://jsdelivr.net"></script>
 <style>
   body { margin: 0; font-family: sans-serif; background: #000; color: #fff; }
   .header { background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888); padding: 12px 15px; display: flex; justify-content: space-between; align-items: center; font-size: 18px; font-weight: bold; }
   .share-btn { background: #000; color: #fff; border: none; padding: 7px 14px; border-radius: 15px; font-size: 12px; font-weight: bold; cursor: pointer; }
   .ad-btn { display: block; background: #1e1e1e; color: #ffcc00; text-align: center; padding: 10px; font-size: 13px; font-weight: bold; text-decoration: none; border-bottom: 1px solid #333; }
-  .tabs { display: flex; background: #121212; border-bottom: 1px solid #222; }
+   .tabs { display: flex; background: #121212; border-bottom: 1px solid #222; }
   .tab { flex: 1; padding: 12px; text-align: center; font-weight: bold; color: #888; }
   .tab.active { color: #ff0055; border-bottom: 2px solid #ff0055; }
   .page { display: none; padding: 15px; padding-bottom: 110px; }
@@ -25,7 +24,7 @@
 </style>
 </head>
 <body>
- <div class="header">
+  <div class="header">
   <span>✨ Vanish Chat</span>
   <button onclick="shareApp()" class="share-btn">📲 शेयर करें</button>
 </div>
@@ -48,8 +47,8 @@
     <input type="text" id="msgInput" placeholder="लाइव मैसेज लिखें..." style="flex: 1;">
     <button onclick="sendMsg()" class="send-btn">भेजें</button>
   </div>
-  </div>
- <div id="media" class="page">
+</div>
+<div id="media" class="page">
   <div class="music-card">
     <div style="font-size: 40px;">🎧</div>
     <h3 style="margin: 10px 0 5px;">म्यूजिक & एंटरटेनमेंट ज़ोन</h3>
@@ -61,9 +60,7 @@
 </div>
 
 <script>
-  const gun = Gun(['https://herokuapp.com']);
-  const chatRoom = gun.get('vanish_chat_deepak_2026');
-  const shown = {};
+  const topic = 'vanish_chat_deepak_741_live';
 
   function shareApp() {
     if (navigator.share) {
@@ -74,7 +71,7 @@
       });
     } else {
       navigator.clipboard.writeText('https://github.io');
-      alert('लिंक कॉपी हो गया है! अब WhatsApp पर पेस्ट करके शेयर करें।');
+      alert('लिंक कॉपी हो गया है!');
     }
   }
 
@@ -85,22 +82,32 @@
     el.classList.add('active');
   }
 
-  chatRoom.map().on(function(data, id) {
-    if (!data || !data.text || shown[id]) return;
-    shown[id] = true;
+  function addBubble(name, text) {
     let box = document.getElementById('messages');
-    box.innerHTML += `<div class="msg"><small>${data.name || 'Guest'}</small>${data.text}</div>`;
+    box.innerHTML += `<div class="msg"><small>${name}</small>${text}</div>`;
     window.scrollTo(0, document.body.scrollHeight);
-  });
+  }
+
+  const evtSource = new EventSource(`https://ntfy.sh{topic}/sse?since=12h`);
+  evtSource.onmessage = function(e) {
+    const data = JSON.parse(e.data);
+    if (data.event === 'message' && data.message) {
+      const parts = data.message.split(':::');
+      addBubble(parts || 'Guest', parts || data.message);
+    }
+  };
 
   function sendMsg() {
     let name = document.getElementById('userName').value.trim() || 'Guest';
     let inp = document.getElementById('msgInput');
-    if (!inp.value.trim()) return;
-    chatRoom.set({ name: name, text: inp.value.trim(), time: Date.now() });
+    let text = inp.value.trim();
+    if (!text) return;
     inp.value = '';
+    fetch(`https://ntfy.sh{topic}`, {
+      method: 'POST',
+      body: name + ':::' + text
+    });
   }
 </script>
 </body>
-  </html>
-  
+</html>
