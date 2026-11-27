@@ -1,31 +1,73 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vanish Chat</title>
+<style>
+  body { margin: 0; font-family: sans-serif; background: #000; color: #fff; }
+  .header { background: #121212; padding: 15px; text-align: center; font-size: 20px; font-weight: bold; color: #ff0055; border-bottom: 1px solid #222; }
+  .ad-box { background: #1e1e1e; color: #aaa; text-align: center; padding: 10px; font-size: 12px; border-bottom: 1px solid #333; }
+  .tabs { display: flex; background: #121212; border-bottom: 1px solid #222; }
+  .tab { flex: 1; padding: 12px; text-align: center; cursor: pointer; font-weight: bold; color: #888; }
+  .tab.active { color: #ff0055; border-bottom: 2px solid #ff0055; }
+  .page { display: none; padding: 15px; padding-bottom: 80px; }
+  .page.active { display: block; }
+    .msg { background: #1e1e1e; padding: 10px 14px; border-radius: 15px; margin-bottom: 10px; max-width: 80%; border-left: 3px solid #ff0055; }
+  .msg small { color: #ff0055; display: block; font-size: 11px; margin-bottom: 3px; }
+  .chat-bar { position: fixed; bottom: 0; left: 0; right: 0; background: #121212; padding: 10px; display: flex; gap: 8px; border-top: 1px solid #222; }
+  input { flex: 1; padding: 10px; border-radius: 20px; border: none; background: #262626; color: #fff; outline: none; }
+  button { background: #ff0055; color: #fff; border: none; padding: 10px 18px; border-radius: 20px; font-weight: bold; }
+  .video-card { background: #121212; border-radius: 12px; overflow: hidden; margin-bottom: 15px; border: 1px solid #222; }
+  iframe { width: 100%; height: 200px; border: none; }
+</style>
+</head>
+<body>
+ <div class="header">✨ Vanish Chat ✨</div>
+
+<!-- यहाँ अपना Adsterra या Monetag का विज्ञापन कोड लगाएं -->https://bicea.org/22/9e879068a767282e0ddf2b2b24d2366e
+<div class="ad-box" id="ad-banner">📢 Sponsored Ad Space (यहाँ आपका विज्ञापन दिखेगा)</div>
+
+<div class="tabs">
+  <div class="tab active" onclick="showTab('chat', this)">💬 लाइव चैट</div>
+  <div class="tab" onclick="showTab('media', this)">🎵 गाने & वीडियो</div>
+</div>
+
+<div id="chat" class="page active">
+  <div id="messages">
+    <div class="msg"><small>Admin (Deepak)</small>स्वागत है! यहाँ आप सबसे बात कर सकते हैं और गाने सुन सकते हैं।</div>
+  </div>
+  <div class="chat-bar">
+    <input type="text" id="msgInput" placeholder="यहाँ मैसेज लिखें...">
+    <button onclick="sendMsg()">भेजें</button>
+  </div>
+</div>
+ <div id="media" class="page">
+  <div class="video-card">
+    <iframe src="https://youtube.com" allowfullscreen></iframe>
+    <div style="padding:10px; font-size:14px;">🎶 24/7 लिरिकल & रिलैक्सिंग म्यूजिक</div>
+  </div>
+  <div class="video-card">
+    <iframe src="https://youtube.com" allowfullscreen></iframe>
+    <div style="padding:10px; font-size:14px;">✨ रोमांटिक & फैंटेसी वाइब्स</div>
+  </div>
+</div>
+
 <script>
-async function runAI() {
-  const k = document.getElementById("key").value.trim();
-  const m = document.getElementById("msg").value.trim();
-  const o = document.getElementById("out");
-  if (!k || !m) { o.innerText = "कृपया API Key और सवाल दोनों लिखें!"; return; }
-  o.innerText = "AI लिख रहा है... रुकें...";
-  try {
-    const r = await fetch("https://googleapis.com", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "x-goog-api-key": k
-      },
-      body: JSON.stringify({ contents: [{ parts: [{ text: m }] }] })
-    });
-    const d = await r.json();
-    if (d.candidates && d.candidates.length > 0) {
-      o.innerText = d.candidates[0].content.parts[0].text;
-    } else if (d.error) {
-      o.innerText = "API Error: " + d.error.message;
-    } else {
-      o.innerText = "कोई जवाब नहीं मिला।";
-    }
-  } catch (e) {
-    o.innerText = "Error: " + e.message;
+  function showTab(id, el) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    el.classList.add('active');
   }
-}
+  function sendMsg() {
+    let inp = document.getElementById('msgInput');
+    if(!inp.value.trim()) return;
+    let box = document.getElementById('messages');
+    box.innerHTML += `<div class="msg"><small>User</small>${inp.value}</div>`;
+    inp.value = '';
+    window.scrollTo(0, document.body.scrollHeight);
+  }
 </script>
 </body>
 </html>
