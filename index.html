@@ -3,76 +3,89 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Vanish Chat</title>
+<title>Vanish Chat - Live</title>
+<script src="https://jsdelivr.net"></script>
 <style>
   body { margin: 0; font-family: sans-serif; background: #000; color: #fff; }
-  .header { background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888); padding: 14px; text-align: center; font-size: 20px; font-weight: bold; }
+  .header { background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888); padding: 12px 15px; display: flex; justify-content: space-between; align-items: center; font-size: 18px; font-weight: bold; }
+  .share-btn { background: #000; color: #fff; border: none; padding: 6px 12px; border-radius: 15px; font-size: 12px; font-weight: bold; text-decoration: none; }
   .ad-btn { display: block; background: #1e1e1e; color: #ffcc00; text-align: center; padding: 10px; font-size: 13px; font-weight: bold; text-decoration: none; border-bottom: 1px solid #333; }
-  .tabs { display: flex; background: #121212; border-bottom: 1px solid #222; }
+    .tabs { display: flex; background: #121212; border-bottom: 1px solid #222; }
   .tab { flex: 1; padding: 12px; text-align: center; font-weight: bold; color: #888; }
   .tab.active { color: #ff0055; border-bottom: 2px solid #ff0055; }
   .page { display: none; padding: 15px; padding-bottom: 85px; }
   .page.active { display: block; }
-    .msg { background: #1a1a1a; padding: 10px 14px; border-radius: 15px; margin-bottom: 10px; max-width: 82%; border-left: 3px solid #ff0055; }
+  .msg { background: #1a1a1a; padding: 10px 14px; border-radius: 15px; margin-bottom: 10px; max-width: 82%; border-left: 3px solid #ff0055; word-wrap: break-word; }
   .msg small { color: #ff0055; display: block; font-size: 11px; margin-bottom: 3px; font-weight: bold; }
   .chat-bar { position: fixed; bottom: 0; left: 0; right: 0; background: #121212; padding: 10px; display: flex; gap: 6px; border-top: 1px solid #222; }
   input { padding: 10px; border-radius: 20px; border: none; background: #262626; color: #fff; outline: none; }
   button { background: #ff0055; color: #fff; border: none; padding: 10px 16px; border-radius: 20px; font-weight: bold; }
-  .video-card { background: #121212; border-radius: 12px; overflow: hidden; margin-bottom: 15px; border: 1px solid #222; }
-  iframe { width: 100%; height: 210px; border: none; }
-  .music-btn { display: block; background: #ff0055; color: #fff; text-align: center; padding: 12px; border-radius: 25px; text-decoration: none; font-weight: bold; margin-top: 10px; }
+  .music-card { background: linear-gradient(135deg, #1f1c2c, #928dab); padding: 20px; border-radius: 15px; text-align: center; margin-bottom: 15px; }
+  .music-btn { display: block; background: #ff0055; color: #fff; text-align: center; padding: 14px; border-radius: 25px; text-decoration: none; font-weight: bold; margin-top: 12px; }
 </style>
 </head>
 <body>
- <div class="header">✨ Vanish Chat ✨</div>
+  <div class="header">
+  <span>✨ Vanish Chat</span>
+  <a href="https://whatsapp.comैट%20और%20म्यूजिक%20ऐप%20पर%20आओ%20और%20लाइव%20बात%20करो:%20https://github.io" target="_blank" class="share-btn">📲 शेयर करें</a>
+</div>
 
-<a href="https://bicea.org/22/9e879068a767282e0ddf2b2b24d2366e" target="_blank" class="ad-btn">
+<a href="https://bicea.org" target="_blank" class="ad-btn">
   🎁 यहाँ क्लिक करें और स्पेशल ऑफर देखें (Sponsored)
 </a>
 
 <div class="tabs">
-  <div class="tab active" onclick="showTab('chat', this)">💬 पब्लिक चैट</div>
+  <div class="tab active" onclick="showTab('chat', this)">🌍 लाइव वर्ल्ड चैट</div>
   <div class="tab" onclick="showTab('media', this)">🎵 गाने & रील्स</div>
 </div>
 
 <div id="chat" class="page active">
   <div id="messages">
-    <div class="msg"><small>Admin (Deepak)</small>स्वागत है! अपना नाम लिखें और चैट शुरू करें।</div>
+    <div class="msg"><small>Admin (Deepak)</small>स्वागत है! यहाँ दुनिया भर के लोग लाइव बात कर सकते हैं।</div>
   </div>
   <div class="chat-bar">
     <input type="text" id="userName" placeholder="नाम" style="width: 70px;">
-    <input type="text" id="msgInput" placeholder="मैसेज लिखें..." style="flex: 1;">
+    <input type="text" id="msgInput" placeholder="लाइव मैसेज लिखें..." style="flex: 1;">
     <button onclick="sendMsg()">भेजें</button>
   </div>
 </div>
-  <div id="media" class="page">
-  <div class="video-card">
-    <iframe src="https://youtube.com" allowfullscreen></iframe>
-    <div style="padding:10px; font-size:14px;">🎶 म्यूजिक & एंटरटेनमेंट प्लेयर</div>
+<div id="media" class="page">
+  <div class="music-card">
+    <div style="font-size: 40px;">🎧</div>
+    <h3 style="margin: 10px 0 5px;">म्यूजिक & एंटरटेनमेंट ज़ोन</h3>
+    <p style="font-size: 13px; color: #eee; margin: 0;">अपने पसंदीदा गाने, रोमांटिक स्टेटस और ट्रेंडिंग रील्स का मज़ा लें।</p>
   </div>
-  <a href="https://youtube.com" target="_blank" class="music-btn">
-    ▶️ रोमांटिक गाने सुनें
-  </a>
-  <a href="https://youtube.com" target="_blank" class="music-btn" style="background:#262626; border:1px solid #ff0055;">
-    🔥 ट्रेंडिंग रील्स & स्टेटस देखें
-  </a>
+  <a href="https://youtube.com" target="_blank" class="music-btn">▶️ रोमांटिक गाने सुनें</a>
+  <a href="https://youtube.com" target="_blank" class="music-btn" style="background:#1e1e1e; border:1px solid #ff0055;">🔥 ट्रेंडिंग रील्स & स्टेटस देखें</a>
+  <a href="https://youtube.com" target="_blank" class="music-btn" style="background:#1e1e1e; border:1px solid #ffcc00; color:#ffcc00;">🌙 लोफी & फैंटेसी वाइब्स</a>
 </div>
 
 <script>
+  const gun = Gun(['https://herokuapp.com']);
+  const chatRoom = gun.get('vanish_chat_deepak_2026');
+  const shown = {};
+
   function showTab(id, el) {
     document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
     document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
     document.getElementById(id).classList.add('active');
     el.classList.add('active');
   }
+
+  chatRoom.map().on(function(data, id) {
+    if (!data || !data.text || shown[id]) return;
+    shown[id] = true;
+    let box = document.getElementById('messages');
+    box.innerHTML += `<div class="msg"><small>${data.name || 'Guest'}</small>${data.text}</div>`;
+    window.scrollTo(0, document.body.scrollHeight);
+  });
+
   function sendMsg() {
     let name = document.getElementById('userName').value.trim() || 'Guest';
     let inp = document.getElementById('msgInput');
-    if(!inp.value.trim()) return;
-    let box = document.getElementById('messages');
-    box.innerHTML += `<div class="msg"><small>${name}</small>${inp.value}</div>`;
+    if (!inp.value.trim()) return;
+    chatRoom.set({ name: name, text: inp.value.trim(), time: Date.now() });
     inp.value = '';
-    window.scrollTo(0, document.body.scrollHeight);
   }
 </script>
 </body>
