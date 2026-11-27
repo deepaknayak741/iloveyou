@@ -3,36 +3,44 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Lyrics & Sketch Maker</title>
+<title>AI Animated Lyrics & Art Maker</title>
 <link href="https://googleapis.com" rel="stylesheet">
 <style>
-  body { margin: 0; font-family: sans-serif; background: #0f0f0f; color: #fff; padding-bottom: 40px; }
-  .header { background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888); padding: 12px 15px; display: flex; justify-content: space-between; align-items: center; font-size: 18px; font-weight: bold; }
-  .share-btn { background: #000; color: #fff; border: none; padding: 7px 14px; border-radius: 15px; font-size: 12px; font-weight: bold; cursor: pointer; }
-  .ad-btn { display: block; background: #1e1e1e; color: #ffcc00; text-align: center; padding: 10px; font-size: 13px; font-weight: bold; text-decoration: none; border-bottom: 1px solid #333; }
+  body { margin: 0; font-family: sans-serif; background: #09090b; color: #fff; padding-bottom: 50px; }
+  .header { background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888); padding: 12px 15px; display: flex; justify-content: space-between; align-items: center; font-size: 17px; font-weight: bold; }
+  .share-btn { background: #000; color: #fff; border: none; padding: 7px 13px; border-radius: 15px; font-size: 12px; font-weight: bold; cursor: pointer; }
+  .ad-btn { display: block; background: #18181b; color: #ffcc00; text-align: center; padding: 9px; font-size: 13px; font-weight: bold; text-decoration: none; border-bottom: 1px solid #27272a; }
   
-  .container { padding: 15px; max-width: 500px; margin: auto; }
-  .input-group { margin-bottom: 12px; }
-  label { display: block; font-size: 13px; color: #bbb; margin-bottom: 5px; font-weight: bold; }
-  input[type="text"], textarea, input[type="file"] {
-    width: 100%; box-sizing: border-box; padding: 10px; border-radius: 10px;
-    border: 1px solid #333; background: #1c1c1c; color: #fff; font-size: 14px; outline: none;
+  .container { padding: 12px; max-width: 480px; margin: auto; }
+  .card { background: #141417; padding: 13px; border-radius: 15px; border: 1px solid #27272a; margin-bottom: 12px; }
+  label { display: block; font-size: 12px; color: #ff4d88; margin-bottom: 5px; font-weight: bold; }
+  
+  .row { display: flex; gap: 8px; margin-bottom: 9px; }
+  input[type="text"], select {
+    flex: 1; padding: 10px; border-radius: 10px; border: 1px solid #333;
+    background: #202024; color: #fff; font-size: 13px; outline: none; width: 100%;
   }
-  textarea { height: 110px; resize: vertical; }
-  
-  .btn-row { display: flex; gap: 10px; margin-top: 10px; }
-  .btn { flex: 1; padding: 12px; border: none; border-radius: 12px; font-weight: bold; font-size: 14px; cursor: pointer; }
-  .btn-gen { background: #ff0055; color: #fff; }
-  .btn-dl { background: #00c853; color: #fff; }
+  .btn-main { background: linear-gradient(90deg, #ff0055, #ff5500); color: #fff; border: none; padding: 0 16px; border-radius: 10px; font-weight: bold; font-size: 14px; cursor: pointer; white-space: nowrap; }
 
-  .preview-box { margin-top: 20px; text-align: center; }
-  canvas { width: 100%; max-width: 400px; border-radius: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.8); background: #fff; }
+  .btn-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 9px; }
+  .btn-sub { padding: 10px 6px; border: 1px solid #333; border-radius: 10px; background: #1f1f23; color: #fff; font-weight: bold; font-size: 12px; cursor: pointer; }
+  .btn-sub:active { background: #333; }
+  .btn-color { border-color: #ff9800; color: #ffcc80; }
+  .btn-dance { border-color: #00e5ff; color: #84ffff; }
+
+  .save-row { display: flex; gap: 8px; }
+  .btn-dl { flex: 1; padding: 11px; border: none; border-radius: 10px; background: #00c853; color: #fff; font-weight: bold; font-size: 13px; cursor: pointer; }
+  .btn-vid { flex: 1; padding: 11px; border: none; border-radius: 10px; background: #651fff; color: #fff; font-weight: bold; font-size: 13px; cursor: pointer; }
+
+  #status { text-align: center; font-size: 12px; color: #ffcc00; margin-top: 8px; min-height: 16px; }
+  .preview-box { text-align: center; margin-top: 8px; }
+  canvas { width: 100%; max-width: 390px; border-radius: 10px; box-shadow: 0 8px 25px rgba(0,0,0,0.95); background: #f7f4eb; }
 </style>
 </head>
 <body>
 
 <div class="header">
-  <span>✍️ Lyrics Sketch Maker</span>
+  <span>✨ AI Dance Lyrics Studio</span>
   <button onclick="shareApp()" class="share-btn">📲 शेयर करें</button>
 </div>
 
@@ -41,28 +49,44 @@
 </a>
 
 <div class="container">
-  <div class="input-group">
-    <label>1. गाने का टाइटल (Title):</label>
-    <input type="text" id="songTitle" value="Ramayan Ka Saar" oninput="drawPoster()">
-  </div>
+  <div class="card">
+    <label>1. गाने का नाम लिखें (फोटो व लिरिक्स अपने आप बनेंगे):</label>
+    <div class="row">
+      <input type="text" id="songInput" placeholder="जैसे: Dollar, 2 Khatole, Gadi 150..." value="Dollar">
+      <button class="btn-main" onclick="autoCreateAll()">✨ बनाएं</button>
+    </div>
 
-  <div class="input-group">
-    <label>2. गाने के बोल (Lyrics):</label>
-    <textarea id="songLyrics" oninput="drawPoster()">जे महाभारत की बात करूं,
-कित भीम ने गोला गेरया था?
-अरे कौनसी मने बता दे, अर्जुन 47 ले रहा था?
-रे पढ़ ले रामायण का सार,
-दिया था रावण तीर तै मार...</textarea>
-  </div>
+    <div class="row">
+      <select id="characterStyle" onchange="generateArt()">
+        <option value="handsome indian desi boy with beard sunglasses and stylish hair, holding stick, attitude pose">😎 हरियाणवी / देसी स्वैग स्टाइल</option>
+        <option value="stylish indian gangster boy standing near black scorpio jeep, sunglasses, cool attitude">🚙 काली गाड़ी / थार स्टाइल</option>
+        <option value="indian couple holding hands, romantic aesthetic look, traditional modern outfit">❤️ रोमांटिक कपल स्टाइल</option>
+        <option value="sad broken heart indian boy sitting alone in rain, emotional look">💔 सैड / दिल टूटा आशिक स्टाइल</option>
+        <option value="beautiful indian girl with open hair and jhumka, stylish attitude pose">💃 स्टाइलिश लड़की स्टाइल</option>
+        <option value="indian boy dancing energetically with raised hand, party celebration vibe">🕺 फुल डांस / पार्टी मूड</option>
+        <option value="lord rama or warrior with bow and arrow, divine heroic stance">🏹 योद्धा / धार्मिक स्टाइल</option>
+      </select>
 
-  <div class="input-group">
-    <label>3. अपनी फोटो चुनें (स्केच बनाने के लिए):</label>
-    <input type="file" id="photoInput" accept="image/*" onchange="loadUserImage(event)">
-  </div>
+      <select id="fontStyle">
+        <option value="Kalam">✍️ देसी लिखावट (Kalam)</option>
+        <option value="Caveat">✒️ कर्सिव पेन (Caveat)</option>
+        <option value="Tillana">🖌️ आर्टिस्टिक ब्रश (Tillana)</option>
+        <option value="Permanent Marker">🖊️ बोल्ड मार्कर (Marker)</option>
+      </select>
+    </div>
 
-  <div class="btn-row">
-    <button class="btn btn-gen" onclick="drawPoster()">✨ पोस्टर अपडेट करें</button>
-    <button class="btn btn-dl" onclick="downloadPoster()">⬇️ फोटो सेव करें</button>
+    <div class="btn-grid">
+      <button class="btn-sub" onclick="changeLyricsLines()">🔄 लाइनें बदलें</button>
+      <button class="btn-sub" onclick="generateArt()">🖼️ नया पोज़ / फोटो बदलें</button>
+      <button class="btn-sub btn-color" id="colorModeBtn" onclick="toggleColorMode()">🌈 मोड: नीला पेन स्केच</button>
+      <button class="btn-sub btn-dance" id="danceModeBtn" onclick="toggleDanceMode()">💃 डांस: बीट वाइब ऑन</button>
+    </div>
+
+    <div class="save-row">
+      <button class="btn-dl" onclick="downloadPoster()">⬇️ फोटो सेव करें</button>
+      <button class="btn-vid" onclick="recordReelVideo()">🎥 डांस वीडियो (6s) सेव करें</button>
+    </div>
+    <div id="status"></div>
   </div>
 
   <div class="preview-box">
@@ -73,13 +97,30 @@
 <script>
   const canvas = document.getElementById('posterCanvas');
   const ctx = canvas.getContext('2d');
-  let userSketchCanvas = null;
+
+  let allLyricsChunks = [];
+  let currentChunkIndex = 0;
+  let currentTitle = "Dollar";
+  let currentLines = ["गाने का नाम लिखकर 'बनाएं' दबाएं..."];
+  let aiArtImg = null;
+
+  // 3 आर्ट मोड: 0 = नीला पेन स्केच, 1 = फुल कलरफुल पेंटिंग, 2 = काला पेंसिल स्केच
+  let colorMode = 0;
+  const colorModes = [
+    { name: "नीला पेन स्केच", prompt: "detailed blue ballpoint pen sketch drawing, crosshatching ink art", titleColor: "#1b2a6b", textColor: "#1e293b", paper: "#f7f4eb" },
+    { name: "फुल कलरफुल आर्ट", prompt: "vibrant colorful digital watercolor and ink illustration, bright colors", titleColor: "#d90429", textColor: "#1d3557", paper: "#fffdf7" },
+    { name: "ब्लैक पेंसिल स्केच", prompt: "realistic black graphite pencil sketch shading art", titleColor: "#111111", textColor: "#222222", paper: "#f4f1ea" }
+  ];
+
+  // 3 डांस मोड: 0 = बीट वाइब (गाने पर झूमना), 1 = भांगड़ा/हिप-हॉप जंप, 2 = स्थिर (No Dance)
+  let danceMode = 0;
+  const danceModes = ["बीट वाइब ऑन", "फुल डांस जंप", "डांस बंद (स्थिर)"];
 
   function shareApp() {
     if (navigator.share) {
       navigator.share({
-        title: 'Lyrics Sketch Maker',
-        text: 'अपनी फोटो का नोटबुक स्केच और लिरिक्स पोस्टर बनाएं:',
+        title: 'AI Dance Lyrics Studio',
+        text: 'गाने के नाम से डांसिंग नोटबुक स्केच और कलरफुल रील्स बनाएं:',
         url: window.location.href
       });
     } else {
@@ -88,144 +129,70 @@
     }
   }
 
-  // फोटो को पेंसिल/बॉलपेन स्केच में बदलने का फंक्शन
-  function loadUserImage(event) {
-    const file = event.target.files[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = function(e) {
-      const img = new Image();
-      img.onload = function() {
-        userSketchCanvas = convertToSketch(img);
-        drawPoster();
-      };
-      img.src = e.target.result;
-    };
-    reader.readAsDataURL(file);
+  function toggleColorMode() {
+    colorMode = (colorMode + 1) % colorModes.length;
+    document.getElementById('colorModeBtn').innerText = `🌈 मोड: ${colorModes[colorMode].name}`;
+    generateArt();
   }
 
-  function convertToSketch(img) {
-    const tempCanvas = document.createElement('canvas');
-    const w = 360;
-    const h = (img.height / img.width) * w;
-    tempCanvas.width = w;
-    tempCanvas.height = h;
-    const tCtx = tempCanvas.getContext('2d');
+  function toggleDanceMode() {
+    danceMode = (danceMode + 1) % danceModes.length;
+    document.getElementById('danceModeBtn').innerText = `💃 डांस: ${danceModes[danceMode]}`;
+  }
 
-    // ग्रेस्केल और हाई-कंट्रास्ट स्केच इफेक्ट
-    tCtx.drawImage(img, 0, 0, w, h);
-    const imgData = tCtx.getImageData(0, 0, w, h);
-    const data = imgData.data;
+  async function autoCreateAll() {
+    const songName = document.getElementById('songInput').value.trim();
+    if (!songName) return;
+    currentTitle = songName;
+    document.getElementById('status').innerText = "⏳ गाने की लाइनें और आर्ट तैयार हो रहा है...";
+    fetchAutoLyrics(songName);
+    generateArt();
+  }
 
-    // स्केच एज डिटेक्शन (Color Dodge Simulation)
-    const gray = new Uint8ClampedArray(w * h);
-    for (let i = 0; i < data.length; i += 4) {
-      gray[i / 4] = 0.299 * data[i] + 0.587 * data[i + 1] + 0.114 * data[i + 2];
-    }
-
-    for (let y = 1; y < h - 1; y++) {
-      for (let x = 1; x < w - 1; x++) {
-        const idx = y * w + x;
-        // आस-पास के पिक्सल से तुलना करके स्केच की लाइनें निकालना
-        const diff = Math.abs(gray[idx] - gray[idx - 1]) + Math.abs(gray[idx] - gray[idx - w]);
-        let val = 255 - (diff * 3.5);
-        if (gray[idx] < 70) val = Math.min(val, gray[idx] * 1.5); // गहरे हिस्सों में शेडिंग
-        val = Math.max(0, Math.min(255, val));
-
-        const pIdx = idx * 4;
-        // हल्का नीला/काला पेन इंक टोन
-        data[pIdx] = val * 0.88;     // R
-        data[pIdx + 1] = val * 0.90; // G
-        data[pIdx + 2] = val;        // B
-        // सफेद बैकग्राउंड को पारदर्शी (Transparent) बनाना ताकि कॉपी की लाइनें दिखें
-        data[pIdx + 3] = val > 225 ? 0 : 255; 
+  async function fetchAutoLyrics(songName) {
+    try {
+      const res = await fetch(`https://lrclib.net{encodeURIComponent(songName)}`);
+      const data = await res.json();
+      let rawText = "";
+      if (data && data.length > 0 && data.plainLyrics) {
+        rawText = data.plainLyrics;
+      } else {
+        const aiPrompt = `Write famous Hindi or Haryanvi song lyrics for "${songName}". Only output 16 short lines of lyrics, no extra text.`;
+        const aiRes = await fetch(`https://pollinations.ai{encodeURIComponent(aiPrompt)}`);
+        rawText = await aiRes.text();
       }
+
+      const lines = rawText.split('\n').map(l => l.trim()).filter(l => l.length > 0);
+      allLyricsChunks = [];
+      for (let i = 0; i < lines.length; i += 11) {
+        allLyricsChunks.push(lines.slice(i, i + 11));
+      }
+      currentChunkIndex = 0;
+      if (allLyricsChunks.length > 0) currentLines = allLyricsChunks;
+    } catch (e) {
+      currentLines = ["लाइनें लोड नहीं हो सकीं, दोबारा 'बनाएं' दबाएं।"];
     }
-    tCtx.putImageData(imgData, 0, 0);
-    return tempCanvas;
   }
 
-  // नोटबुक का पन्ना, लिरिक्स और स्केच बनाने का मुख्य फंक्शन
-  function drawPoster() {
-    const w = canvas.width;
-    const h = canvas.height;
-
-    // 1. कागज़ का बैकग्राउंड रंग
-    ctx.fillStyle = '#fbf9f2';
-    ctx.fillRect(0, 0, w, h);
-
-    // 2. बाईं तरफ स्पाइरल बाइंडिंग के छेद और रिंग्स
-    ctx.fillStyle = '#222';
-    for (let y = 35; y < h - 20; y += 42) {
-      ctx.beginPath();
-      ctx.arc(32, y, 9, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.strokeStyle = '#555';
-      ctx.lineWidth = 5;
-      ctx.beginPath();
-      ctx.moveTo(0, y - 3);
-      ctx.lineTo(32, y);
-      ctx.stroke();
+  function changeLyricsLines() {
+    if (allLyricsChunks.length <= 1) {
+      document.getElementById('status').innerText = "ℹ️ इस गाने में इतनी ही लाइनें उपलब्ध हैं।";
+      return;
     }
-
-    // 3. कॉपी की नीली/ग्रे लाइनें
-    ctx.strokeStyle = '#cbd5e1';
-    ctx.lineWidth = 2;
-    for (let y = 210; y < h - 40; y += 44) {
-      ctx.beginPath();
-      ctx.moveTo(60, y);
-      ctx.lineTo(w - 20, y);
-      ctx.stroke();
-    }
-
-    // 4. ऊपर लाल डबल मार्जिन लाइन
-    ctx.strokeStyle = '#e11d48';
-    ctx.lineWidth = 2;
-    ctx.beginPath();
-    ctx.moveTo(60, 195); ctx.lineTo(w - 20, 195);
-    ctx.moveTo(60, 202); ctx.lineTo(w - 20, 202);
-    ctx.stroke();
-
-    // 5. टाइटल लिखना (पेन की स्याही जैसा नीला रंग)
-    const title = document.getElementById('songTitle').value;
-    ctx.fillStyle = '#1e3a8a';
-    ctx.font = 'bold 78px "Caveat", "Kalam", cursive';
-    ctx.textAlign = 'center';
-    ctx.fillText(title, w / 2 + 20, 140);
-
-    // 6. दाईं तरफ यूज़र की फोटो का स्केच लगाना
-    if (userSketchCanvas) {
-      const sw = 340;
-      const sh = (userSketchCanvas.height / userSketchCanvas.width) * sw;
-      ctx.drawImage(userSketchCanvas, w - sw - 15, h - sh - 30, sw, sh);
-    }
-
-    // 7. बाईं तरफ लिरिक्स लिखना
-    const lyrics = document.getElementById('songLyrics').value.split('\n');
-    ctx.fillStyle = '#1e293b';
-    ctx.font = 'bold 30px "Kalam", cursive';
-    ctx.textAlign = 'left';
-    let startY = 245;
-    lyrics.forEach((line) => {
-      ctx.fillText(line, 80, startY);
-      startY += 44; // हर लाइन कॉपी की लाइन के ऊपर बैठेगी
-    });
+    currentChunkIndex = (currentChunkIndex + 1) % allLyricsChunks.length;
+    currentLines = allLyricsChunks[currentChunkIndex];
+    document.getElementById('status').innerText = `✅ लाइन सेट ${currentChunkIndex + 1}/${allLyricsChunks.length} बदल गया है`;
   }
 
-  // इमेज डाउनलोड करने का फंक्शन
-  function downloadPoster() {
-    const link = document.createElement('a');
-    link.download = 'lyrics-sketch-poster.png';
-    link.href = canvas.toDataURL('image/png');
-    link.click();
-  }
+  function generateArt() {
+    const status = document.getElementById('status');
+    const style = document.getElementById('characterStyle').value;
+    const modeObj = colorModes[colorMode];
+    status.innerText = `🎨 ${modeObj.name} बन रहा है... (5-8 सेकंड रुकें)`;
 
-  // पेज लोड होते ही डिफ़ॉल्ट पोस्टर दिखाएं
-  window.onload = () => {
-    setTimeout(drawPoster, 500);
-  };
-</script>
+    const fullPrompt = `${modeObj.prompt} of ${style}, theme ${currentTitle}, isolated on pure solid white background, clean white paper, no text, no borders`;
+    const seed = Math.floor(Math.random() * 999999);
+    const url = `https://pollinations.ai{encodeURIComponent(fullPrompt)}?width=512&height=896&seed=${seed}&nologo=true`;
 
-</body>
-                                              </html>
+    const img = new Image();
   
