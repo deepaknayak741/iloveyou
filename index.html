@@ -1,64 +1,4 @@
-<!DOCTYPE html>
-<html lang="hi">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AI Lyrics Studio</title>
-<link rel="stylesheet" href="https://googleapis.com">
-<style>
-body { margin: 0; font-family: sans-serif; background: #09090b; color: #fff; padding-bottom: 40px; }
-.header { background: linear-gradient(45deg, #f09433, #dc2743, #bc1888); padding: 12px 15px; display: flex; justify-content: space-between; align-items: center; font-size: 17px; font-weight: bold; }
-.share-btn { background: #000; color: #fff; border: none; padding: 7px 13px; border-radius: 15px; font-size: 12px; font-weight: bold; }
-.ad-btn { display: block; background: #18181b; color: #ffcc00; text-align: center; padding: 9px; font-size: 13px; font-weight: bold; text-decoration: none; }
-.box { padding: 12px; max-width: 480px; margin: auto; }
-.card { background: #141417; padding: 12px; border-radius: 15px; border: 1px solid #27272a; margin-bottom: 12px; }
-label { display: block; font-size: 12px; color: #ff4d88; margin-bottom: 5px; font-weight: bold; }
-.row { display: flex; gap: 8px; margin-bottom: 8px; }
-input, select { flex: 1; padding: 10px; border-radius: 10px; border: 1px solid #333; background: #202024; color: #fff; font-size: 13px; width: 100%; }
-.btn-main { background: #ff0055; color: #fff; border: none; padding: 0 16px; border-radius: 10px; font-weight: bold; font-size: 14px; }
-.grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 8px; }
-.btn-sub { padding: 10px 6px; border: 1px solid #333; border-radius: 10px; background: #1f1f23; color: #fff; font-weight: bold; font-size: 12px; }
-.btn-dl { flex: 1; padding: 11px; border: none; border-radius: 10px; background: #00c853; color: #fff; font-weight: bold; font-size: 13px; }
-.btn-vid { flex: 1; padding: 11px; border: none; border-radius: 10px; background: #651fff; color: #fff; font-weight: bold; font-size: 13px; }
-#status { text-align: center; font-size: 12px; color: #ffcc00; margin-top: 8px; }
-canvas { width: 100%; max-width: 390px; border-radius: 10px; background: #f7f4eb; display: block; margin: auto; }
-</style>
-</head>
-<body>
-<div class="header"><span>✨ AI Lyrics Studio</span><button onclick="shareApp()" class="share-btn">📲 शेयर करें</button></div>
-<a href="https://bicea.org" target="_blank" class="ad-btn">🎁 स्पेशल ऑफर देखें (Sponsored)</a>
-<div class="box">
- <div class="card">
-  <label>1. गाने का नाम लिखें:</label>
-  <div class="row"><input type="text" id="songInput" value="Sapna Choudhary"><button class="btn-main" onclick="makeAll()">✨ बनाएं</button></div>
-  <div class="row">
-   <select id="charStyle" onchange="makeArt()">
-    <option value="stylish haryanvi girl dancing in suit">💃 हरियाणवी डांसिंग गर्ल</option>
-    <option value="handsome desi boy beard sunglasses">😎 देसी स्वैग बॉय</option>
-    <option value="indian boy near black scorpio jeep">🚙 काली गाड़ी / थार</option>
-    <option value="romantic indian couple holding hands">❤️ रोमांटिक कपल</option>
-    <option value="sad broken heart boy in rain">💔 सैड आशिक स्टाइल</option>
-   </select>
-   <select id="fontPick">
-    <option value="Kalam">✍️ देसी (Kalam)</option>
-    <option value="Caveat">✒️ कर्सिव (Caveat)</option>
-   </select>
-  </div>
-  <div class="grid">
-   <button class="btn-sub" onclick="nextLines()">🔄 लाइनें बदलें</button>
-   <button class="btn-sub" onclick="makeArt()">🖼️ फोटो बदलें</button>
-   <button class="btn-sub" id="colBtn" onclick="nextColor()">🌈 नीला पेन स्केच</button>
-   <button class="btn-sub" id="dncBtn" onclick="nextDance()">💃 डांस: ऑन</button>
-  </div>
-  <div class="row">
-   <button class="btn-dl" onclick="saveImg()">⬇️ फोटो सेव</button>
-   <button class="btn-vid" onclick="saveVid()">🎥 वीडियो सेव (6s)</button>
-  </div>
-  <div id="status">✅ तैयार है!</div>
- </div>
- <canvas id="cv" width="720" height="1280"></canvas>
-     </div>
-    <script>
+<script>
 const cv = document.getElementById('cv');
 const ctx = cv.getContext('2d');
 let title = "Sapna Choudhary";
@@ -224,6 +164,237 @@ function drawLoop(ts) {
    ctx.font = 'bold 27px "' + f + '", cursive';
    if (ctx.measureText(ln).width > 365) {
     ctx.font = 'bold 21px "' + f + '", cursive';
+   }
+   ctx.fillText(ln.trim(), 82, yp);
+   yp += 44;
+  }
+ });
+ requestAnimationFrame(drawLoop);
+}
+
+function saveImg() {
+ const a = document.createElement('a');
+ a.download = title + '.png';
+ a.href = cv.toDataURL('image/png');
+ a.click();
+}
+
+function saveVid() {
+ setSt("🎥 6s वीडियो बन रहा है...");
+ const st = cv.captureStream(30);
+ const rec = new MediaRecorder(st);
+ const ch = new Array();
+ rec.ondataavailable = function(e) { if (e.data.size > 0) ch.push(e.data); };
+ rec.onstop = function() {
+  const b = new Blob(ch, { type: 'video/webm' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(b);
+  a.download = title + '.webm';
+  a.click();
+  setSt("✅ वीडियो सेव हो गया!");
+ };
+ rec.start();
+ setTimeout(function() { rec.stop(); }, 6000);
+}
+
+requestAnimationFrame(drawLoop);
+setTimeout(makeAll, 500);
+</script>
+</body>
+ </html>
+ <script>
+const cv = document.getElementById('cv');
+const ctx = cv.getContext('2d');
+let title = "Sidhu Moose Wala - 295";
+let fullSongText = "";
+let pageIndex = 0;
+let currentLines = "गाने का नाम लिखकर 'बनाएं' दबाएं,\nयहाँ पूरा गाना अपने आप लिखा जाएगा...";
+let artImg = null;
+let colIdx = 0;
+let dncIdx = 0;
+
+function setSt(t) { document.getElementById('status').innerText = t; }
+
+function shareApp() {
+ const u = window.location.href;
+ if (navigator.share) { navigator.share({ url: u }); }
+ else { navigator.clipboard.writeText(u); alert('लिंक कॉपी हो गया!'); }
+}
+
+function nextColor() {
+ colIdx = (colIdx + 1) % 3;
+ let name = "नीला पेन स्केच";
+ if (colIdx === 1) name = "फुल कलरफुल";
+ if (colIdx === 2) name = "ब्लैक स्केच";
+ document.getElementById('colBtn').innerText = "🌈 " + name;
+ makeArt();
+}
+
+function nextDance() {
+ dncIdx = (dncIdx + 1) % 3;
+ let name = "मोशन: लाइव वाइब";
+ if (dncIdx === 1) name = "मोशन: ज़ूम व टिल्ट";
+ if (dncIdx === 2) name = "मोशन: बंद (फोटो)";
+ document.getElementById('dncBtn').innerText = "🎬 " + name;
+}
+
+function makeAll() {
+ const v = document.getElementById('songInput').value.trim();
+ if (!v) return;
+ title = v;
+ pageIndex = 0;
+ setSt("⏳ पूरा गाना और असली स्केच बन रहा है...");
+ getLyrics(v);
+ makeArt();
+}
+
+async function getLyrics(song) {
+ try {
+  // 1. पहले असली म्यूजिक डेटाबेस से पूरा गाना खोजें
+  const r1 = await fetch("https://lrclib.net" + encodeURIComponent(song));
+  const d1 = await r1.json();
+  if (d1 && d1.length > 0 && d1.item && d1.item.plainLyrics) {
+   fullSongText = d1.item.plainLyrics;
+  } else if (d1 && d1.length > 0) {
+   let firstItem = d1.at(0);
+   if (firstItem && firstItem.plainLyrics) {
+    fullSongText = firstItem.plainLyrics;
+   }
+  }
+
+  // 2. अगर वहां न मिले तो AI से पूरा 24 लाइन का गाना मंगवाएं
+  if (!fullSongText || fullSongText.length < 30) {
+   const q = encodeURIComponent("Write full 24 lines Hindi or Punjabi song lyrics for " + song + ". Only lyrics lines, no intro.");
+   const r2 = await fetch("https://pollinations.ai" + q);
+   fullSongText = await r2.text();
+  }
+
+  updateVisibleLines();
+ } catch (e) {
+  currentLines = "गाना लोड नहीं हो सका, दोबारा 'बनाएं' दबाएं।";
+ }
+}
+
+function updateVisibleLines() {
+ const allArr = fullSongText.split('\n').filter(function(s) { return s.trim().length > 1; });
+ const perPage = 13; // एक बार में 13 लाइनें दिखेंगी
+ const totalPages = Math.max(1, Math.ceil(allArr.length / perPage));
+ pageIndex = pageIndex % totalPages;
+ const start = pageIndex * perPage;
+ const slice = allArr.slice(start, start + perPage);
+ currentLines = slice.join('\n');
+ setSt("✅ भाग " + (pageIndex + 1) + "/" + totalPages + " तैयार है!");
+}
+
+function nextLines() {
+ if (!fullSongText) return;
+ pageIndex = pageIndex + 1;
+ updateVisibleLines();
+}
+
+function makeArt() {
+ const choice = document.getElementById('charStyle').value;
+ const subject = (choice === "same") ? title : choice;
+ let promptType = "detailed blue ballpoint pen sketch portrait";
+ if (colIdx === 1) promptType = "vibrant colorful watercolor and ink portrait art";
+ if (colIdx === 2) promptType = "realistic black graphite pencil sketch portrait";
+ setSt("🎨 " + subject + " का स्केच बन रहा है...");
+
+ const p = encodeURIComponent(promptType + " of " + subject + ", half body pose, crosshatching shading, isolated on pure solid white background, no text, clean white paper");
+ const sd = Math.floor(Math.random() * 99999);
+ const u = "https://pollinations.ai" + p + "?width=512&height=896&seed=" + sd + "&nologo=true";
+
+ const img = new Image();
+ img.crossOrigin = "Anonymous";
+ img.onload = function() {
+  artImg = img;
+  setSt("✅ तैयार है! नीचे पूरा गाना और स्केच देखें");
+ };
+ img.onerror = function() {
+  setSt("⚠️ नेटवर्क धीमा है, 'फोटो बदलें' दबाएं");
+ };
+ img.src = u;
+}
+
+function drawLoop(ts) {
+ const w = cv.width;
+ const h = cv.height;
+ const f = document.getElementById('fontPick').value;
+
+ let bg = "#f7f4eb";
+ let tc = "#1b2a6b";
+ let lc = "#1e293b";
+ if (colIdx === 1) { bg = "#fffdf7"; tc = "#d90429"; lc = "#1d3557"; }
+ if (colIdx === 2) { bg = "#f4f1ea"; tc = "#111111"; lc = "#222222"; }
+
+ ctx.globalCompositeOperation = 'source-over';
+ ctx.fillStyle = bg;
+ ctx.fillRect(0, 0, w, h);
+
+ ctx.strokeStyle = '#b8c4d0';
+ ctx.lineWidth = 2;
+ for (let y = 230; y < h - 40; y += 44) {
+  ctx.beginPath(); ctx.moveTo(65, y); ctx.lineTo(w - 20, y); ctx.stroke();
+ }
+
+ ctx.strokeStyle = '#e63946';
+ ctx.lineWidth = 2;
+ ctx.beginPath(); ctx.moveTo(65, 212); ctx.lineTo(w - 20, 212);
+ ctx.moveTo(65, 219); ctx.lineTo(w - 20, 219); ctx.stroke();
+
+ for (let y = 35; y < h - 20; y += 42) {
+  ctx.fillStyle = '#18181b';
+  ctx.beginPath(); ctx.arc(36, y, 9, 0, 6.28); ctx.fill();
+  ctx.strokeStyle = '#555'; ctx.lineWidth = 5;
+  ctx.beginPath(); ctx.moveTo(0, y - 4); ctx.lineTo(36, y); ctx.stroke();
+ }
+
+ // कागज़ के अंदर ही स्मूथ सिनेमैटिक लाइव मोशन (कोई कार्टून इमोजी नहीं)
+ const t = (ts || 0) * 0.003;
+ let ang = 0; let scale = 1; let shiftY = 0;
+ if (dncIdx === 0) {
+  // हल्की सांस और बीट वाइब
+  ang = Math.sin(t) * 0.018;
+  scale = 1 + Math.sin(t * 2) * 0.015;
+  shiftY = Math.sin(t * 2) * 5;
+ } else if (dncIdx === 1) {
+  // स्मूथ ज़ूम और टिल्ट मोशन
+  ang = Math.sin(t * 0.8) * 0.035;
+  scale = 1.03 + Math.sin(t * 1.5) * 0.03;
+ }
+
+ if (artImg && artImg.complete && artImg.naturalWidth > 0) {
+  ctx.save();
+  ctx.globalCompositeOperation = 'multiply';
+  const sw = 420;
+  const sh = (artImg.height / artImg.width) * sw;
+  ctx.translate(w - sw / 2 - 190, h - 20 + shiftY);
+  ctx.rotate(ang);
+  ctx.scale(scale, scale);
+  ctx.drawImage(artImg, -sw / 2, -sh, sw, sh);
+  ctx.restore();
+ } else {
+  // जब तक स्केच लोड हो रहा है तब तक साफ टेक्स्ट दिखेगा (कोई इमोजी नहीं)
+  ctx.fillStyle = '#94a3b8';
+  ctx.font = 'bold 26px "Kalam", cursive';
+  ctx.textAlign = 'center';
+  ctx.fillText("🎨 स्केच बन रहा है...", w - 180, h - 180);
+ }
+
+ ctx.fillStyle = tc;
+ ctx.font = 'bold 64px "Caveat", "' + f + '", cursive';
+ ctx.textAlign = 'center';
+ ctx.fillText(title, w / 2 + 25, 155);
+
+ ctx.fillStyle = lc;
+ ctx.textAlign = 'left';
+ let yp = 266;
+ const arr = currentLines.split('\n');
+ arr.forEach(function(ln) {
+  if (ln.trim().length > 0) {
+   ctx.font = 'bold 26px "' + f + '", cursive';
+   if (ctx.measureText(ln).width > 360) {
+    ctx.font = 'bold 20px "' + f + '", cursive';
    }
    ctx.fillText(ln.trim(), 82, yp);
    yp += 44;
